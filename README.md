@@ -2,9 +2,12 @@
 
 A web-based tool for drawing and analyzing geometric shapes. Simple, functional, gets the job done.
 
+**No installation needed!** Try it right now at: https://zhirkoalexander-maker.github.io/bender/
+
 ## Quick Links
 
-- **[Website](https://zhirkoalexander-maker.github.io/bender/)** - Full documentation and features
+- **[🌐 TRY IT NOW](https://zhirkoalexander-maker.github.io/bender/)** - Live, fully working app (no installation needed!)
+- **[Docs](https://zhirkoalexander-maker.github.io/bender/)** - Documentation and guides
 - **[Web App](./web/)** - Run locally with Python and Flask
 
 ## What is it?
@@ -16,7 +19,17 @@ Started as a desktop app for learning geometry. Converted it to a web version be
 - Transform shapes (rotate, scale, mirror)
 - Save and load your drawings
 
+**GitHub Pages Version**: There's a fully working version hosted on GitHub Pages that works 100% in your browser. No Python, no installation needed. Just open the link and start drawing.
+
 ## 30-second Setup
+
+### Option 1: Use it online (recommended)
+
+Just go to: https://zhirkoalexander-maker.github.io/bender/
+
+That's it. It works.
+
+### Option 2: Run it locally with Python
 
 ```bash
 git clone https://github.com/zhirkoalexander-maker/bender.git
