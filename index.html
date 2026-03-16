@@ -789,17 +789,18 @@
                 </div>
 
                 <div class="panel">
-                    <h2>TOOLS</h2>
+                    <h2>SHAPE TOOLS</h2>
                     <div class="button-group">
-                        <button id="label-sides-btn" style="background: #FF6B6B; color: white;">📏 Label Sides</button>
-                        <button id="label-shape-btn" style="background: #4ECDC4; color: white;">🏷 Label Shape</button>
+                        <button id="label-sides-btn" style="background: #FF6B6B; color: white;" title="Show length of each side">📏 Label Sides</button>
+                        <button id="label-shape-btn" style="background: #4ECDC4; color: white;" title="Show shape type name (Triangle, Square, etc)">🏷 Label Shape</button>
+                        <button id="ruler-btn" style="background: #FFA502; color: white;" title="Measure distance between two points">📐 Ruler</button>
                     </div>
-                    <h2 style="margin-top: 15px;">VISUAL AIDS</h2>
+                    <h2 style="margin-top: 15px;">TRIANGLE TOOLS</h2>
                     <div class="button-group">
-                        <button id="median-btn" style="background: #FF6B6B; color: white;">📍 Medians</button>
-                        <button id="altitude-btn" style="background: #45B7D1; color: white;">↕️ Altitudes</button>
-                        <button id="bisector-btn" style="background: #AA96DA; color: white;">∠ Bisectors</button>
-                        <button id="circumcircle-btn" style="background: #FFA502; color: white;">⭕ Circle</button>
+                        <button id="median-btn" style="background: #FF6B6B; color: white;" title="Show medians (lines from vertices to opposite side midpoints)">📍 Medians</button>
+                        <button id="altitude-btn" style="background: #45B7D1; color: white;" title="Show altitudes (perpendicular lines from vertices to opposite sides)">↕️ Altitudes</button>
+                        <button id="bisector-btn" style="background: #AA96DA; color: white;" title="Show angle bisectors (lines that split angles in half)">∠ Bisectors</button>
+                        <button id="circumcircle-btn" style="background: #95E1D3; color: #333;" title="Show circumcircle (circle through all triangle vertices)">◯ Circumcircle</button>
                     </div>
                 </div>
 
@@ -1111,6 +1112,11 @@
             showAltitude: false,
             showBisector: false,
             showCircumcircle: false,
+            showLabels: false,
+            showRuler: false,
+            rulerPoints: [],
+            mouseX: 0,
+            mouseY: 0,
             currentProjectName: 'Untitled Project',
         };
 
@@ -1346,6 +1352,30 @@
             document.getElementById('bisector-btn').addEventListener('click', () => toggleVisualization('bisector'));
             document.getElementById('circumcircle-btn').addEventListener('click', () => toggleVisualization('circumcircle'));
             
+            document.getElementById('label-sides-btn').addEventListener('click', () => {
+                state.showLabels = !state.showLabels;
+                document.getElementById('label-sides-btn').style.opacity = state.showLabels ? '1' : '0.7';
+                redraw();
+            });
+            
+            document.getElementById('label-shape-btn').addEventListener('click', () => {
+                if (state.selectedShapeIdx !== null) {
+                    const shape = state.shapes[state.selectedShapeIdx];
+                    if (shape) {
+                        const label = shape.type === 'circle' ? 'Circle' : `${detectShapeType(shape.points)} (${shape.points.length}pts)`;
+                        alert(`Shape: ${label}\nColor: ${shape.color}`);
+                    }
+                }
+            });
+            
+            document.getElementById('ruler-btn').addEventListener('click', () => {
+                state.showRuler = !state.showRuler;
+                state.rulerPoints = [];
+                document.getElementById('ruler-btn').style.opacity = state.showRuler ? '1' : '0.7';
+                alert(state.showRuler ? 'Ruler mode: Click 2 points to measure distance' : 'Ruler mode disabled');
+                redraw();
+            });
+            
             document.getElementById('show-median').addEventListener('change', e => {
                 state.showMedian = e.target.checked;
                 redraw();
@@ -1396,6 +1426,20 @@
             const rect = canvas.getBoundingClientRect();
             let x = (e.clientX - rect.left) * canvas.width / rect.width;
             let y = (e.clientY - rect.top) * canvas.height / rect.height;
+
+            // Ruler mode - measure distance between points
+            if (state.showRuler) {
+                state.rulerPoints.push([x, y]);
+                if (state.rulerPoints.length === 2) {
+                    const [x1, y1] = state.rulerPoints[0];
+                    const [x2, y2] = state.rulerPoints[1];
+                    const distance = Math.hypot(x2 - x1, y2 - y1);
+                    alert(`Distance: ${distance.toFixed(1)} px`);
+                    state.rulerPoints = [];
+                }
+                redraw();
+                return;
+            }
 
             // Select mode - click to select shape
             if (state.currentShape === 'select') {
@@ -1449,6 +1493,9 @@
             const x = Math.round((e.clientX - rect.left) * canvas.width / rect.width);
             const y = Math.round((e.clientY - rect.top) * canvas.height / rect.height);
             
+            state.mouseX = x;
+            state.mouseY = y;
+            
             let coordText = `X: ${x}, Y: ${y}`;
             
             // Показываем расстояние до последней точки если есть точки
@@ -1463,6 +1510,11 @@
             // Обновляем анализ в реальном времени
             if (state.points.length >= 3) {
                 displayShapeInfo();
+            }
+
+            // Redraw when ruler is active to show preview
+            if (state.showRuler && state.rulerPoints.length === 1) {
+                redraw();
             }
         }
 
@@ -1536,6 +1588,21 @@
                     if (state.showBisector) drawBisectors(state.points);
                     if (state.showCircumcircle && state.points.length === 3) drawCircumcircleShape(state.points);
                 }
+            }
+
+            if (state.showLabels) {
+                state.shapes.forEach((shape, idx) => {
+                    if (idx === state.selectedShapeIdx && shape.points.length >= 2) {
+                        drawSideLabels(shape.points, shape.color);
+                    }
+                });
+                if (state.points.length >= 2) {
+                    drawSideLabels(state.points, state.currentColor);
+                }
+            }
+
+            if (state.showRuler) {
+                drawRulerMeasurement();
             }
         }
 
@@ -1749,6 +1816,60 @@
             }
         }
 
+        function drawSideLabels(points, color) {
+            if (points.length < 2) return;
+            ctx.fillStyle = color;
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = 0; i < points.length; i++) {
+                const p1 = points[i];
+                const p2 = points[(i + 1) % points.length];
+                const midX = (p1[0] + p2[0]) / 2;
+                const midY = (p1[1] + p2[1]) / 2;
+                const length = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+                
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.fillRect(midX - 20, midY - 10, 40, 20);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(midX - 20, midY - 10, 40, 20);
+                
+                ctx.fillStyle = color;
+                ctx.fillText(length.toFixed(0) + 'px', midX, midY);
+            }
+        }
+
+        function drawRulerMeasurement() {
+            if (state.rulerPoints.length === 0) return;
+            
+            const [x1, y1] = state.rulerPoints[0];
+            ctx.fillStyle = '#FFA502';
+            ctx.beginPath();
+            ctx.arc(x1, y1, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (state.rulerPoints.length === 1) {
+                const mouseX = state.mouseX;
+                const mouseY = state.mouseY;
+                
+                ctx.strokeStyle = '#FFA502';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(mouseX, mouseY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                const dist = Math.hypot(mouseX - x1, mouseY - y1);
+                ctx.fillStyle = '#FFA502';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(dist.toFixed(0) + 'px', (x1 + mouseX) / 2, (y1 + mouseY) / 2 - 10);
+            }
+        }
+
         function createSquare() {
             if (state.points.length < 2) return;
             const [x1, y1] = state.points[0];
@@ -1769,6 +1890,15 @@
             const [x1, y1] = state.points[0];
             const [x2, y2] = state.points[1];
             state.points = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]];
+        }
+
+        function detectShapeType(points) {
+            const n = points.length;
+            if (n === 3) return 'Triangle';
+            if (n === 4) return 'Quadrilateral';
+            if (n === 5) return 'Pentagon';
+            if (n === 6) return 'Hexagon';
+            return 'Polygon';
         }
 
         function analyzeShape(points) {
