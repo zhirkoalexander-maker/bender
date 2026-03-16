@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fafafa;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin: 80px 0;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        section h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+
+        section h3 {
+            font-size: 1.3em;
+            color: #667eea;
+            margin: 25px 0 15px 0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin: 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        pre code {
+            background: none;
+            color: #f8f8f2;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #f4f4f4;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        table tr:hover {
+            background: #f9f9f9;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        ul li, ol li {
+            margin: 8px 0;
+        }
+
+        p {
+            margin: 15px 0;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f4f4f4;
+            border-radius: 5px;
+        }
+
+        .shortcut kbd {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .toc {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .toc a {
+            display: block;
+            color: #667eea;
+            text-decoration: none;
+            margin: 8px 0;
+            padding: 5px 10px;
+        }
+
+        .toc a:hover {
+            background: white;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            section {
+                margin: 40px 0;
+                padding: 20px;
+            }
+
+            section h2 {
+                font-size: 1.5em;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Geometry Studio</h1>
+        <p>Draw shapes, run calculations, transform them around</p>
+        <div class="btn-group">
+            <a href="#demo" class="btn btn-primary">Try Demo</a>
+            <a href="https://github.com/zhirkoalexander-maker/bender" class="btn">View on GitHub</a>
+            <a href="#getting-started" class="btn">Get Started</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <section>
+            <div class="toc">
+                <strong>Quick Navigation:</strong>
+                <a href="#what-is-it">• What is it?</a>
+                <a href="#features">• Features</a>
+                <a href="#demo">• Demo</a>
+                <a href="#getting-started">• Getting Started</a>
+                <a href="#usage">• How to Use</a>
+                <a href="#shortcuts">• Keyboard Shortcuts</a>
+                <a href="#api">• API Reference</a>
+            </div>
+        </section>
+
+        <section id="what-is-it">
+            <h2>What is it?</h2>
+            <p>A simple tool for drawing geometric shapes in your browser. Started with a desktop app for learning geometry, ended up as a web app because why not.</p>
+            <p>You can sketch shapes, get basic info about them (area, perimeter), and transform them. Nothing complicated, just functional.</p>
+        </section>
+
+        <section id="features">
+            <h2>What You Can Do</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>Draw Shapes</h3>
+                    <p>Triangles, squares, rectangles, circles, or freeform polygons. Click points on the canvas and hit finish.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Quick Math</h3>
+                    <p>Automatic calculations for perimeter and area. Uses the Shoelace formula for polygons.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Transform</h3>
+                    <p>Rotate, scale, mirror horizontally or vertically. All transformations are instant.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Grid & Snap</h3>
+                    <p>Optional grid to help you draw straight. Can turn it off if you prefer freeform.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Save Work</h3>
+                    <p>Download your drawings as JSON. Load them back later if needed.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Keyboard Control</h3>
+                    <p>F to finish, Z to undo, Q to clear. Standard shortcuts for fast workflow.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo">
+            <h2>Live Demo</h2>
+            <p>The app can be used locally. Here's how to set it up:</p>
+        </section>
+
+        <section id="getting-started">
+            <h2>Getting Started</h2>
+            <h3>Quick Start</h3>
+            <pre><code>git clone https://github.com/zhirkoalexander-maker/bender.git
+cd bender/web
+
+pip install -r requirements.txt
+python app.py</code></pre>
+            <p>Then go to <code>http://localhost:5000</code></p>
+
+            <h3>Requirements</h3>
+            <ul>
+                <li>Python 3.7+</li>
+                <li>Flask (installed via requirements.txt)</li>
+            </ul>
+
+            <h3>What you get</h3>
+            <ul>
+                <li>Web interface with HTML5 Canvas</li>
+                <li>Flask API backend for calculations</li>
+                <li>Real-time shape analysis</li>
+                <li>Transform tools (rotate, scale, mirror)</li>
+                <li>Grid system with snap-to-grid</li>
+            </ul>
+        </section>
+
+        <section id="usage">
+            <h2>How to Use It</h2>
+            <ol>
+                <li>Pick a shape from the left panel</li>
+                <li>Click on the canvas to place points</li>
+                <li>Hit F, double-click, or click Finish button to complete</li>
+                <li>Use the transform tools if you want to modify it</li>
+                <li>Click Save to download as JSON</li>
+            </ol>
+
+            <h3 style="margin-top: 30px;">Basic Workflow</h3>
+            <ol>
+                <li>Select Triangle (or whatever shape)</li>
+                <li>Click three points on the canvas</li>
+                <li>Press F or double-click to finish</li>
+                <li>Area and perimeter show up at the bottom</li>
+                <li>You can rotate it, scale it, mirror it if needed</li>
+            </ol>
+        </section>
+
+        <section id="shortcuts">
+            <h2>Keyboard Shortcuts</h2>
+            <div class="keyboard-shortcuts">
+                <div class="shortcut">
+                    <kbd>F</kbd>
+                    <span>Finish current shape</span>
+                </div>
+                <div class="shortcut">
+                    <kbd>Z</kbd>
+                    <span>Undo last action</span>
+                </div>
+                <div class="shortcut">
+                    <kbd>Q</kbd>
+                    <span>Clear everything</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Project Structure</h2>
+            <p>Pretty simple layout:</p>
+            <pre><code>web/
+├── app.py              # Flask server
+├── requirements.txt    # Dependencies
+├── templates/
+│   └── index.html     # Main interface
+└── static/
+    ├── app.js         # Canvas logic
+    └── style.css      # Styling</code></pre>
+        </section>
+
+        <section>
+            <h2>Colors</h2>
+            <p>The app comes with 8 colors to choose from:</p>
+            <table>
+                <tr>
+                    <th>Color</th>
+                    <th>Hex</th>
+                </tr>
+                <tr>
+                    <td>Red</td>
+                    <td><code>#FF6B6B</code></td>
+                </tr>
+                <tr>
+                    <td>Cyan</td>
+                    <td><code>#4ECDC4</code></td>
+                </tr>
+                <tr>
+                    <td>Blue</td>
+                    <td><code>#45B7D1</code></td>
+                </tr>
+                <tr>
+                    <td>Orange</td>
+                    <td><code>#FFA502</code></td>
+                </tr>
+                <tr>
+                    <td>Mint</td>
+                    <td><code>#95E1D3</code></td>
+                </tr>
+                <tr>
+                    <td>Pink</td>
+                    <td><code>#F38181</code></td>
+                </tr>
+                <tr>
+                    <td>Purple</td>
+                    <td><code>#AA96DA</code></td>
+                </tr>
+                <tr>
+                    <td>Light Pink</td>
+                    <td><code>#FCBAD3</code></td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="api">
+            <h2>API Reference</h2>
+            <p>If you're running the Flask version locally, these endpoints are available:</p>
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>What it does</th>
+                </tr>
+                <tr>
+                    <td><code>/api/analyze</code></td>
+                    <td>POST</td>
+                    <td>Get area, perimeter, shape type</td>
+                </tr>
+                <tr>
+                    <td><code>/api/rotate</code></td>
+                    <td>POST</td>
+                    <td>Rotate shape by angle</td>
+                </tr>
+                <tr>
+                    <td><code>/api/scale</code></td>
+                    <td>POST</td>
+                    <td>Scale shape by factor</td>
+                </tr>
+                <tr>
+                    <td><code>/api/mirror</code></td>
+                    <td>POST</td>
+                    <td>Mirror horizontally or vertically</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>What Might Come Later</h2>
+            <ul>
+                <li>SVG export (PDF too maybe)</li>
+                <li>More measurement tools</li>
+                <li>Better mobile support</li>
+                <li>Some history/undo improvements</li>
+                <li>Probably not 3D, but who knows</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>License</h2>
+            <p>MIT. Do whatever you want with it.</p>
+        </section>
+    </div>
+
+    <footer>
+        <p><strong>Geometry Studio</strong></p>
+        <p>A simple shape drawing tool</p>
+        <p><a href="https://github.com/zhirkoalexander-maker/bender">github.com/zhirkoalexander-maker/bender</a></p>
+        <p style="margin-top: 20px; opacity: 0.7; font-size: 0.9em;">© 2024 • MIT License</p>
+    </footer>
+</body>
+</html>

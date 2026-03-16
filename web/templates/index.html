@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Geometry Studio - Interactive Drawing</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🎨 GEOMETRY STUDIO</h1>
+                <p>Interactive Geometry Drawing & Analysis</p>
+            </div>
+            <div class="header-status">
+                <span id="status" class="status-indicator">Ready</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Sidebar -->
+            <aside class="sidebar sidebar-left">
+                <div class="panel">
+                    <h2>SHAPES</h2>
+                    <div class="button-group">
+                        <button class="shape-btn" data-shape="triangle">△ Triangle</button>
+                        <button class="shape-btn" data-shape="square">▢ Square</button>
+                        <button class="shape-btn" data-shape="rectangle">▭ Rectangle</button>
+                        <button class="shape-btn" data-shape="circle">● Circle</button>
+                        <button class="shape-btn" data-shape="polygon">◈ Polygon</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>COLORS</h2>
+                    <div class="color-grid">
+                        <button class="color-btn" style="background: #FF6B6B" data-color="#FF6B6B" title="Red"></button>
+                        <button class="color-btn" style="background: #4ECDC4" data-color="#4ECDC4" title="Cyan"></button>
+                        <button class="color-btn" style="background: #45B7D1" data-color="#45B7D1" title="Blue"></button>
+                        <button class="color-btn" style="background: #FFA502" data-color="#FFA502" title="Orange"></button>
+                        <button class="color-btn" style="background: #95E1D3" data-color="#95E1D3" title="Mint"></button>
+                        <button class="color-btn" style="background: #F38181" data-color="#F38181" title="Pink"></button>
+                        <button class="color-btn" style="background: #AA96DA" data-color="#AA96DA" title="Purple"></button>
+                        <button class="color-btn" style="background: #FCBAD3" data-color="#FCBAD3" title="Light Pink"></button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>TOOLS</h2>
+                    <div class="button-group">
+                        <button class="tool-btn" id="rotate-btn">🔄 Rotate</button>
+                        <button class="tool-btn" id="scale-btn">📏 Scale</button>
+                        <button class="tool-btn" id="mirror-h-btn">↔ Mirror H</button>
+                        <button class="tool-btn" id="mirror-v-btn">↕ Mirror V</button>
+                        <button class="tool-btn" id="move-btn">↔↕ Move</button>
+                        <button class="tool-btn" id="clear-btn">🗑 Clear</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>OPTIONS</h2>
+                    <label class="checkbox">
+                        <input type="checkbox" id="grid-toggle" checked>
+                        <span>Show Grid</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="snap-toggle" checked>
+                        <span>Snap to Grid</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="animate-toggle">
+                        <span>Animations</span>
+                    </label>
+                </div>
+
+                <div class="panel">
+                    <h2>HELP</h2>
+                    <p class="help-text">
+                        1. Select a shape<br>
+                        2. Click on canvas to add points<br>
+                        3. Double-click or press F to finish<br>
+                        4. Use tools to transform<br>
+                        5. Click "Save" to store
+                    </p>
+                </div>
+            </aside>
+
+            <!-- Center Canvas Area -->
+            <section class="canvas-area">
+                <div class="canvas-wrapper">
+                    <canvas id="canvas" width="800" height="600"></canvas>
+                    <div class="canvas-overlay" id="overlay"></div>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="info-panel">
+                    <h3>SHAPE ANALYSIS</h3>
+                    <div id="info-content" class="info-content">
+                        <p id="shape-name">No shape selected</p>
+                        <p id="shape-stats">Points: 0 | Sides: 0 | Area: 0</p>
+                        <p id="shape-formula"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Sidebar -->
+            <aside class="sidebar sidebar-right">
+                <div class="panel">
+                    <h2>HISTORY</h2>
+                    <div id="history-list" class="history-list">
+                        <p class="empty-state">No actions yet</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>QUICK ACTIONS</h2>
+                    <div class="button-group">
+                        <button class="action-btn" id="undo-btn">↶ Undo (Z)</button>
+                        <button class="action-btn" id="finish-btn">✓ Finish (F)</button>
+                        <button class="action-btn" id="save-btn">💾 Save</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>STATS</h2>
+                    <div class="stats-box">
+                        <div class="stat-item">
+                            <span class="stat-label">Points:</span>
+                            <span class="stat-value" id="stat-points">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Mode:</span>
+                            <span class="stat-value" id="stat-mode">triangle</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Color:</span>
+                            <span class="stat-value" id="stat-color" style="color: #FF6B6B;">■</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>SAVED DRAWINGS</h2>
+                    <div id="saved-list" class="saved-list">
+                        <p class="empty-state">No saved drawings yet</p>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 Geometry Studio | <span id="coords">X: 0, Y: 0</span></p>
+        </footer>
+    </div>
+
+    <!-- Modal for input -->
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modal-title">Input Value</h2>
+            <input type="number" id="modal-input" placeholder="Enter value">
+            <div class="modal-buttons">
+                <button id="modal-ok">OK</button>
+                <button id="modal-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
