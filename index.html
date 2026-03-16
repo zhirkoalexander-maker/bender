@@ -42,6 +42,33 @@
             font-weight: 700;
         }
 
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        #projects-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        #projects-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        #projects-btn:active {
+            transform: translateY(0);
+        }
+
         .status-badge {
             background: #4CAF50;
             padding: 8px 16px;
@@ -50,6 +77,194 @@
             font-weight: bold;
             text-transform: uppercase;
             color: white;
+        }
+
+        .projects-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .projects-panel.active {
+            display: flex;
+        }
+
+        .projects-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 500px;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .projects-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .projects-header h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .projects-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+        }
+
+        .projects-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .projects-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .projects-actions button {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .projects-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .project-item {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .project-item:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .project-item h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .project-item p {
+            margin: 0;
+            color: #999;
+            font-size: 11px;
+        }
+
+        .project-item-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .project-item-buttons button {
+            flex: 1;
+            padding: 6px 12px;
+            font-size: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .project-item-buttons button:hover {
+            background: #764ba2;
+        }
+
+        .project-item-buttons .delete-btn {
+            background: #FF6B6B;
+        }
+
+        .project-item-buttons .delete-btn:hover {
+            background: #FF5252;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .empty-state p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .projects-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+
+        .projects-footer button {
+            flex: 1;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .projects-footer button:hover {
+            background: #e8e8e8;
+        }
+
+        .projects-footer .save-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+        }
+
+        .projects-footer .save-btn:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
         }
 
         .main {
@@ -306,7 +521,10 @@
     <div class="container">
         <header>
             <h1>Geometry Studio</h1>
-            <div class="status-badge" id="status">Ready</div>
+            <div class="header-buttons">
+                <button id="projects-btn">📁 Projects</button>
+                <div class="status-badge" id="status">Ready</div>
+            </div>
         </header>
 
         <div class="main">
@@ -441,6 +659,32 @@
         </footer>
     </div>
 
+    <!-- Projects Panel -->
+    <div id="projects-panel" class="projects-panel">
+        <div class="projects-content">
+            <div class="projects-header">
+                <h2>My Projects</h2>
+                <button class="projects-close" onclick="toggleProjectsPanel()">&times;</button>
+            </div>
+            <div class="projects-body">
+                <div class="projects-actions">
+                    <button onclick="createNewProject()">➕ New Project</button>
+                    <button onclick="loadLastProject()">↩️ Last Project</button>
+                </div>
+                <div id="projects-list" class="projects-list">
+                    <div class="empty-state">
+                        <p>📭 No projects yet</p>
+                        <p style="font-size: 12px;">Create a new project to get started!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="projects-footer">
+                <button class="save-btn" onclick="saveCurrentProject()">💾 Save Project</button>
+                <button onclick="toggleProjectsPanel()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal" class="modal">
         <div class="modal-content">
             <h2 id="modal-title">Input</h2>
@@ -454,7 +698,7 @@
 
     <script>
         // Force cache clear on load
-        console.log('Geometry Studio v2.0.1 - Select mode enabled, Freeform drawing added');
+        console.log('Geometry Studio v3.0 - Beautiful project menu with save/load');
         
         const state = {
             currentShape: 'triangle',
@@ -467,6 +711,101 @@
             showMedian: true,
             showAltitude: false,
             showBisector: false,
+            currentProjectName: 'Untitled Project',
+        };
+
+        // Project management
+        const projectManager = {
+            currentProject: null,
+            
+            getProjects() {
+                const stored = localStorage.getItem('geometryProjects');
+                return stored ? JSON.parse(stored) : [];
+            },
+            
+            saveProjects(projects) {
+                localStorage.setItem('geometryProjects', JSON.stringify(projects));
+            },
+            
+            createProject(name) {
+                const projects = this.getProjects();
+                const project = {
+                    id: Date.now(),
+                    name: name || `Project ${new Date().toLocaleString()}`,
+                    data: {
+                        shapes: [],
+                        currentColor: '#FF6B6B',
+                    },
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                };
+                projects.push(project);
+                this.saveProjects(projects);
+                this.currentProject = project;
+                state.currentProjectName = project.name;
+                return project;
+            },
+            
+            saveCurrentProject() {
+                if (!this.currentProject) {
+                    this.currentProject = this.createProject();
+                }
+                const projects = this.getProjects();
+                const idx = projects.findIndex(p => p.id === this.currentProject.id);
+                if (idx >= 0) {
+                    projects[idx].data = {
+                        shapes: state.shapes,
+                        currentColor: state.currentColor,
+                    };
+                    projects[idx].updatedAt = new Date().toISOString();
+                    this.saveProjects(projects);
+                    this.currentProject = projects[idx];
+                }
+                refreshProjectsList();
+                document.getElementById('status').textContent = `✓ Saved: ${this.currentProject.name}`;
+                setTimeout(() => { document.getElementById('status').textContent = 'Ready'; }, 2000);
+            },
+            
+            loadProject(projectId) {
+                const projects = this.getProjects();
+                const project = projects.find(p => p.id === projectId);
+                if (project) {
+                    state.shapes = [...project.data.shapes];
+                    state.currentColor = project.data.currentColor;
+                    state.points = [];
+                    state.selectedShapeIdx = null;
+                    this.currentProject = project;
+                    state.currentProjectName = project.name;
+                    redraw();
+                    toggleProjectsPanel();
+                    document.getElementById('status').textContent = `✓ Loaded: ${project.name}`;
+                    setTimeout(() => { document.getElementById('status').textContent = 'Ready'; }, 2000);
+                }
+            },
+            
+            deleteProject(projectId) {
+                if (confirm('Delete this project?')) {
+                    let projects = this.getProjects();
+                    projects = projects.filter(p => p.id !== projectId);
+                    this.saveProjects(projects);
+                    refreshProjectsList();
+                }
+            },
+            
+            renameProject(projectId, newName) {
+                const projects = this.getProjects();
+                const project = projects.find(p => p.id === projectId);
+                if (project && newName) {
+                    project.name = newName;
+                    project.updatedAt = new Date().toISOString();
+                    this.saveProjects(projects);
+                    if (this.currentProject?.id === projectId) {
+                        this.currentProject.name = newName;
+                        state.currentProjectName = newName;
+                    }
+                    refreshProjectsList();
+                }
+            },
         };
 
         const canvas = document.getElementById('canvas');
@@ -474,13 +813,104 @@
         const GRID_SIZE = 20;
         const POINT_SIZE = 8;
 
+
+        // UI Helper Functions
+        function toggleProjectsPanel() {
+            const panel = document.getElementById('projects-panel');
+            panel.classList.toggle('active');
+        }
+
+        function refreshProjectsList() {
+            const listContainer = document.getElementById('projects-list');
+            const projects = projectManager.getProjects();
+            
+            if (projects.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <p>📭 No projects yet</p>
+                        <p style="font-size: 12px;">Create a new project to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listContainer.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <h3>${project.name}</h3>
+                    <p>Shapes: ${project.data.shapes.length} | Modified: ${new Date(project.updatedAt).toLocaleDateString()}</p>
+                    <div class="project-item-buttons">
+                        <button onclick="projectManager.loadProject(${project.id})">Load</button>
+                        <button onclick="promptRenameProject(${project.id})">Rename</button>
+                        <button class="delete-btn" onclick="projectManager.deleteProject(${project.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function createNewProject() {
+            const name = prompt('Project name:', `Project ${new Date().toLocaleString().split(',')[0]}`);
+            if (name) {
+                projectManager.createProject(name);
+                refreshProjectsList();
+                document.getElementById('status').textContent = `✓ Created: ${name}`;
+                setTimeout(() => { document.getElementById('status').textContent = 'Ready'; }, 2000);
+            }
+        }
+
+        function saveCurrentProject() {
+            const name = prompt('Save as:', state.currentProjectName);
+            if (name) {
+                if (!projectManager.currentProject) {
+                    projectManager.createProject(name);
+                } else {
+                    projectManager.renameProject(projectManager.currentProject.id, name);
+                }
+                projectManager.saveCurrentProject();
+            }
+        }
+
+        function loadLastProject() {
+            const projects = projectManager.getProjects();
+            if (projects.length > 0) {
+                const lastProject = projects[projects.length - 1];
+                projectManager.loadProject(lastProject.id);
+            } else {
+                alert('No projects to load');
+            }
+        }
+
+        function promptRenameProject(projectId) {
+            const projects = projectManager.getProjects();
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                const newName = prompt('New name:', project.name);
+                if (newName) {
+                    projectManager.renameProject(projectId, newName);
+                }
+            }
+        }
+
         // Setup
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize projects
+            const savedProjects = projectManager.getProjects();
+            if (savedProjects.length === 0) {
+                projectManager.createProject('My First Project');
+            } else {
+                projectManager.currentProject = savedProjects[savedProjects.length - 1];
+            }
+            
             setupListeners();
             redraw();
         });
 
         function setupListeners() {
+            // Projects button
+            document.getElementById('projects-btn').addEventListener('click', () => {
+                refreshProjectsList();
+                toggleProjectsPanel();
+            });
+
             document.querySelectorAll('.shape-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
@@ -1028,6 +1458,8 @@
                 updateUI();
                 redraw();
                 document.getElementById('status').textContent = 'Shape saved!';
+                // Auto-save to project
+                projectManager.saveCurrentProject();
             } else if (state.points.length > 0) {
                 alert('Need 3+ points to finish');
             }
