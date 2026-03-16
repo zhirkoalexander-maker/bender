@@ -789,12 +789,17 @@
                 </div>
 
                 <div class="panel">
-                    <h2>ANALYSIS</h2>
+                    <h2>TOOLS</h2>
                     <div class="button-group">
-                        <button id="median-btn">Medians</button>
-                        <button id="altitude-btn">Altitudes</button>
-                        <button id="bisector-btn">Bisectors</button>
-                        <button id="circumcircle-btn">Circumcircle</button>
+                        <button id="label-sides-btn" style="background: #FF6B6B; color: white;">📏 Label Sides</button>
+                        <button id="label-shape-btn" style="background: #4ECDC4; color: white;">🏷 Label Shape</button>
+                    </div>
+                    <h2 style="margin-top: 15px;">VISUAL AIDS</h2>
+                    <div class="button-group">
+                        <button id="median-btn" style="background: #FF6B6B; color: white;">📍 Medians</button>
+                        <button id="altitude-btn" style="background: #45B7D1; color: white;">↕️ Altitudes</button>
+                        <button id="bisector-btn" style="background: #AA96DA; color: white;">∠ Bisectors</button>
+                        <button id="circumcircle-btn" style="background: #FFA502; color: white;">⭕ Circle</button>
                     </div>
                 </div>
 
@@ -885,6 +890,7 @@
                         <option value="equilateral">Equilateral Triangle</option>
                         <option value="isosceles">Isosceles Triangle</option>
                         <option value="right">Right Triangle</option>
+                        <option value="generic">Generic Triangle</option>
                         <option value="square">Square</option>
                         <option value="rectangle">Rectangle</option>
                         <option value="pentagon">Regular Pentagon</option>
@@ -905,6 +911,14 @@
                         <input type="number" id="right-a" value="60" min="10" max="200">
                         <label>Side B (px)</label>
                         <input type="number" id="right-b" value="80" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="generic-inputs">
+                        <label>Side A (px)</label>
+                        <input type="number" id="generic-a" value="60" min="10" max="200">
+                        <label>Side B (px)</label>
+                        <input type="number" id="generic-b" value="70" min="10" max="200">
+                        <label>Side C (px)</label>
+                        <input type="number" id="generic-c" value="80" min="10" max="200">
                     </div>
                     <div class="builder-inputs" id="square-inputs">
                         <label>Side (px)</label>
@@ -1466,7 +1480,7 @@
 
             state.shapes.forEach((shape, idx) => {
                 const isSelected = idx === state.selectedShapeIdx;
-                drawShape(shape.points, shape.color, false, isSelected);
+                drawShape(shape.points, shape.color, false, isSelected, false);
                 
                 if (isSelected && shape.points.length >= 3) {
                     if (state.showMedian) drawMedians(shape.points);
@@ -1514,7 +1528,7 @@
             }
         }
 
-        function drawShape(points, color, dashed = false, selected = false) {
+        function drawShape(points, color, dashed = false, selected = false, isFreeform = false) {
             if (points.length < 2) return;
 
             ctx.strokeStyle = selected ? '#333' : color;
@@ -1522,7 +1536,9 @@
 
             if (dashed) ctx.setLineDash([5, 5]);
 
-            for (let i = 0; i < points.length; i++) {
+            // For freeform, don't close the shape
+            const limit = isFreeform ? points.length - 1 : points.length;
+            for (let i = 0; i < limit; i++) {
                 const p1 = points[i];
                 const p2 = points[(i + 1) % points.length];
                 ctx.beginPath();
@@ -1533,7 +1549,7 @@
 
             ctx.setLineDash([]);
 
-            if (points.length >= 3) {
+            if (points.length >= 3 && !isFreeform) {
                 ctx.fillStyle = selected ? color + '60' : color + '20';
                 ctx.beginPath();
                 ctx.moveTo(points[0][0], points[0][1]);
@@ -2176,6 +2192,12 @@
                         const b = parseFloat(document.getElementById('right-b').value);
                         points = buildRightTriangle(a, b);
                         break;
+                    case 'generic':
+                        const ga = parseFloat(document.getElementById('generic-a').value);
+                        const gb = parseFloat(document.getElementById('generic-b').value);
+                        const gc = parseFloat(document.getElementById('generic-c').value);
+                        points = buildGenericTriangle(ga, gb, gc);
+                        break;
                     case 'square':
                         const sqSide = parseFloat(document.getElementById('square-side').value);
                         points = buildSquare(sqSide);
@@ -2273,6 +2295,26 @@
                 ]);
             }
             return points;
+        }
+
+        function buildGenericTriangle(a, b, c) {
+            // Проверяем неравенство треугольника
+            if (a + b <= c || a + c <= b || b + c <= a) {
+                alert('Invalid triangle: sum of any two sides must be greater than the third');
+                return [];
+            }
+            
+            // Строим треугольник с использованием закона косинусов
+            const cx = 400, cy = 250;
+            const p1 = [cx - a / 2, cy];
+            const p2 = [cx + a / 2, cy];
+            
+            // Вычисляем третью точку используя формулу
+            const cosA = (a * a + c * c - b * b) / (2 * a * c);
+            const sinA = Math.sqrt(1 - cosA * cosA);
+            const p3 = [p1[0] + c * cosA, p1[1] - c * sinA];
+            
+            return [p1, p2, p3];
         }
 
         function toggleHelpModal() {
