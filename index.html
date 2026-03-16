@@ -792,6 +792,7 @@
                     <h2>SHAPE TOOLS</h2>
                     <div class="button-group">
                         <button id="label-sides-btn" style="background: #FF6B6B; color: white;" title="Show length of each side">📏 Label Sides</button>
+                        <button id="label-angles-btn" style="background: #9C27B0; color: white;" title="Show angle at each vertex">∠ Label Angles</button>
                         <button id="label-shape-btn" style="background: #4ECDC4; color: white;" title="Show shape type name (Triangle, Square, etc)">🏷 Label Shape</button>
                         <button id="ruler-btn" style="background: #FFA502; color: white;" title="Measure distance between two points">📐 Ruler</button>
                     </div>
@@ -1102,6 +1103,7 @@
             showBisector: false,
             showCircumcircle: false,
             showLabels: false,
+            showAngles: false,
             showRuler: false,
             rulerPoints: [],
             mouseX: 0,
@@ -1365,6 +1367,12 @@
                 redraw();
             });
             
+            document.getElementById('label-angles-btn').addEventListener('click', () => {
+                state.showAngles = !state.showAngles;
+                document.getElementById('label-angles-btn').style.opacity = state.showAngles ? '1' : '0.7';
+                redraw();
+            });
+            
             document.getElementById('show-median').addEventListener('change', e => {
                 state.showMedian = e.target.checked;
                 redraw();
@@ -1587,6 +1595,17 @@
                 });
                 if (state.points.length >= 2) {
                     drawSideLabels(state.points, state.currentColor);
+                }
+            }
+
+            if (state.showAngles) {
+                state.shapes.forEach((shape, idx) => {
+                    if (idx === state.selectedShapeIdx && shape.points.length >= 3) {
+                        drawAngles(shape.points);
+                    }
+                });
+                if (state.points.length >= 3) {
+                    drawAngles(state.points);
                 }
             }
 
@@ -1827,6 +1846,47 @@
                 
                 ctx.fillStyle = color;
                 ctx.fillText(length.toFixed(0) + 'px', midX, midY);
+            }
+        }
+
+        function drawAngles(points) {
+            if (points.length < 3) return;
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = 0; i < points.length; i++) {
+                const vertex = points[i];
+                const prev = points[(i - 1 + points.length) % points.length];
+                const next = points[(i + 1) % points.length];
+                
+                // Calculate angle at this vertex
+                const a = angle(vertex, prev, next);
+                
+                // Position label inside the polygon, close to vertex
+                const dx1 = prev[0] - vertex[0];
+                const dy1 = prev[1] - vertex[1];
+                const dx2 = next[0] - vertex[0];
+                const dy2 = next[1] - vertex[1];
+                
+                const dist1 = Math.hypot(dx1, dy1);
+                const dist2 = Math.hypot(dx2, dy2);
+                
+                const offset = 20;
+                const labelX = vertex[0] + (dx1 / dist1 + dx2 / dist2) * offset / 2;
+                const labelY = vertex[1] + (dy1 / dist1 + dy2 / dist2) * offset / 2;
+                
+                // Draw background rectangle
+                const text = a.toFixed(1) + '°';
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.fillRect(labelX - 22, labelY - 10, 44, 20);
+                ctx.strokeStyle = '#9C27B0';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(labelX - 22, labelY - 10, 44, 20);
+                
+                // Draw text
+                ctx.fillStyle = '#9C27B0';
+                ctx.fillText(text, labelX, labelY);
             }
         }
 
