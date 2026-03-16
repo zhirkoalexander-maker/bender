@@ -1,102 +1,107 @@
 # Geometry Studio
 
-A web-based tool for drawing and analyzing geometric shapes. Simple, functional, gets the job done.
+A web-based tool for learning geometry by drawing and analyzing shapes. Built to actually help with math homework and understanding geometric concepts.
 
-## Quick Links
+**[👉 Try it here](https://zhirkoalexander-maker.github.io/bender/)** - No installation needed, works in browser.
 
-- **[Website](https://zhirkoalexander-maker.github.io/bender/)** - Full documentation and features
-- **[Try it Online](https://zhirkoalexander-maker.github.io/bender/)** - No setup needed
-- **[Web App](./web/)** - Run locally with Python
+## Why I made this
 
-## What is it?
+I kept using calc for geometry homework but it got annoying - you'd draw something by hand, measure it with a protractor, do the math... lots of room for mistakes. So I built a tool where you just draw the shape and it calculates everything for you. No more "did I measure at the right angle?"
 
-Started as a desktop app for learning geometry. Converted it to a web version because it's more accessible. You can:
+The older version was desktop. The web version is way cleaner and actually useful in class.
 
-- Draw different geometric shapes (triangles, squares, circles, etc.)
-- Get calculations done automatically (area, perimeter)
-- Transform shapes (rotate, scale, mirror)
-- Save and load your drawings
+## What it does
 
-## 30-second Setup
+### Drawing
+- Draw triangles, squares, rectangles, circles, or freeform shapes
+- Snap to grid to keep things aligned
+- Point your cursor where you want it, click, done
+- Press F to finish the shape (or double-click)
+
+### Real-time Analysis (the useful part)
+When you draw a shape, you instantly get:
+- **Side lengths** - all of them
+- **Angles** - in degrees
+- **Perimeter** - total outline length
+- **Area** - using real geometric formulas
+- **Triangle detection** - if it's equilateral, isosceles, or right-angled
+- **Heights & medians** - perpendiculars and lines to midpoints
+- **Heron's formula** - alternative way to verify area
+
+For example: draw a triangle, and it'll immediately tell you the side lengths, all three angles, whether it's a right triangle, what the heights are, and the exact area. Perfect for checking your work.
+
+### Project Management
+- Save multiple projects locally
+- Switch between them without losing work
+- Each project keeps all your shapes
+- Quick save button, no dialogs
+
+### Visualization Tools
+Toggle these on/off to see:
+- **Medians** (red dashed lines) - from vertices to opposite side midpoints
+- **Altitudes** (blue lines) - perpendiculars from vertices to sides  
+- **Angle bisectors** (purple lines) - splits angles in half
+- **Circumcircle** (orange) - circle that passes through all vertices
+
+Perfect for understanding the geometry you're learning about.
+
+### Transformations
+- Rotate by any angle
+- Scale up or down
+- Mirror horizontally or vertically
+- Updates all calculations automatically
+
+## How to use it
+
+1. Pick a shape type (Triangle, Square, etc.) or use Freeform for custom shapes
+2. Click points on the canvas (grid helps with alignment)
+3. Press F when done (or double-click to close)
+4. All the math happens instantly in the Analysis panel
+5. Use Select mode to pick existing shapes and inspect them
+6. Save to a project when you want to come back later
+
+## Keyboard shortcuts
+
+| Key | What it does |
+|-----|------------|
+| **F** | Finish current shape |
+| **Z** | Undo last point |
+| **Q** | Clear everything |
+
+## What makes it different
+
+Most drawing tools are just... drawing. This one actually calculates. You get:
+
+- **Instant feedback** - see all the numbers the moment you finish
+- **Real formulas** - not approximations. Uses Shoelace formula for area, angle calculation, Heron's formula for triangles
+- **Learning features** - highlights triangle types, shows geometric constructions (medians, altitudes, bisectors)
+- **Project management** - save your work, come back to it later
+- **No backend needed** - everything runs in your browser, nothing sent to servers
+
+## Technical details
+
+- Built with HTML5 Canvas and vanilla JavaScript
+- All math calculations happen client-side
+- Projects saved in browser's localStorage
+- Works offline (once the page loads)
+- No external dependencies except the browser
+
+## Try it
+
+**[👉 https://zhirkoalexander-maker.github.io/bender/](https://zhirkoalexander-maker.github.io/bender/)**
+
+Or run locally:
 
 ```bash
-git clone https://github.com/zhirkoalexander-maker/bender.git
-cd bender/web
-
-pip install -r requirements.txt
-python app.py
+cd web
+python3 -m http.server 8000
 ```
 
-Open `http://localhost:5000`
+Then open `http://localhost:8000`
 
-## How it Works
+---
 
-1. Select a shape
-2. Click points on the canvas
-3. Hit F to finish
-4. Use tools to transform if you want
-5. Save it
-
-That's basically it.
-
-## Features
-
-- **8 Colors** - Cyan, red, blue, orange, mint, pink, purple, light pink
-- **Shape Tools** - Triangle, square, rectangle, circle, freeform polygon
-- **Transform** - Rotate, scale, mirror (H/V)
-- **Calculate** - Automatic area and perimeter
-- **Grid** - Optional grid with snap-to-grid
-- **Keyboard** - F (finish), Z (undo), Q (clear)
-- **Save** - Export as JSON
-
-## Requirements
-
-- Python 3.7+
-- Flask
-
-## Tech Stack
-
-- **Backend**: Flask (Python)
-- **Frontend**: HTML5 Canvas + Vanilla JavaScript
-- **Styling**: CSS with gradient design
-
-## Project Structure
-
-```
-.
-├── web/                  # Flask app
-│   ├── app.py
-│   ├── requirements.txt
-│   ├── templates/
-│   │   └── index.html
-│   └── static/
-│       ├── app.js
-│       └── style.css
-├── docs/                 # GitHub Pages
-├── _config.yml
-└── main.py              # Original desktop version
-```
-
-## What's included
-
-### Backend API
-
-- `/api/analyze` - Get shape properties
-- `/api/rotate` - Rotate by angle
-- `/api/scale` - Scale by factor
-- `/api/mirror` - Mirror horizontally/vertically
-
-### Frontend
-
-- Canvas for drawing
-- Color picker (8 colors)
-- Shape selection
-- Transform controls
-- History tracking
-
-## Building it
-
-No build process. Just Flask serving static files. Pretty straightforward.
+Made for actually understanding geometry, not just drawing shapes. If you've got a math test coming up, this might actually help.
 
 ## Why I made this
 
