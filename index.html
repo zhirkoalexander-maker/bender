@@ -1806,7 +1806,14 @@
 
         function analyzeSelectedShape(idx) {
             const shape = state.shapes[idx];
-            const analysis = analyzeShape(shape.points);
+            let analysis = null;
+            
+            if (shape.type === 'circle' && shape.points.length === 2) {
+                analysis = analyzeCircle(shape.points);
+            } else {
+                analysis = analyzeShape(shape.points);
+            }
+            
             displayAnalysis(analysis);
             
             // Также обновляем старые элементы для совместимости
@@ -1818,7 +1825,15 @@
         }
 
         function displayShapeInfo() {
-            if (state.points.length >= 3) {
+            if (state.currentShape === 'circle' && state.points.length === 2) {
+                const analysis = analyzeCircle(state.points);
+                if (analysis) {
+                    document.getElementById('shape-name').textContent = 'Circle';
+                    document.getElementById('shape-stats').textContent = `Radius: ${analysis.radius.toFixed(1)}px`;
+                    document.getElementById('shape-formula').textContent = `Area: ${analysis.area.toFixed(1)}px²`;
+                    displayAnalysis(analysis);
+                }
+            } else if (state.points.length >= 3) {
                 const analysis = analyzeShape(state.points);
                 if (analysis) {
                     document.getElementById('shape-name').textContent = `${analysis.type} (${state.points.length} points)`;
@@ -1895,8 +1910,13 @@
         }
 
         function finishShape() {
-            if (state.points.length >= 3) {
-                state.shapes.push({ points: [...state.points], color: state.currentColor });
+            const minPoints = state.currentShape === 'circle' ? 2 : 3;
+            if (state.points.length >= minPoints) {
+                state.shapes.push({ 
+                    points: [...state.points], 
+                    color: state.currentColor,
+                    type: state.currentShape 
+                });
                 state.points = [];
                 state.selectedShapeIdx = null;
                 document.getElementById('shape-name').textContent = 'No shape';
@@ -1908,7 +1928,7 @@
                 // Auto-save to project
                 projectManager.saveCurrentProject();
             } else if (state.points.length > 0) {
-                alert('Need 3+ points to finish');
+                alert(`Need ${minPoints}+ points to finish`);
             }
         }
 
@@ -2002,6 +2022,27 @@
                 area -= points[j][0] * points[i][1];
             }
             return Math.abs(area / 2);
+        }
+
+        function analyzeCircle(points) {
+            if (!points || points.length !== 2) return null;
+            
+            const [center, edgePoint] = points;
+            const radius = Math.hypot(edgePoint[0] - center[0], edgePoint[1] - center[1]);
+            const diameter = radius * 2;
+            const circumference = 2 * Math.PI * radius;
+            const area = Math.PI * radius * radius;
+            
+            return {
+                type: 'Circle',
+                radius: radius,
+                diameter: diameter,
+                circumference: circumference,
+                area: area,
+                centerX: center[0],
+                centerY: center[1],
+                properties: []
+            };
         }
 
         function analyzeShape(points) {
@@ -2128,6 +2169,21 @@
             
             // Тип фигуры
             html += `<h3>${analysis.type}</h3>`;
+            
+            // Специальная обработка для круга
+            if (analysis.type === 'Circle') {
+                html += '<h3>Dimensions</h3>';
+                html += `<div class="analysis-item"><span class="analysis-label">Radius</span><span class="analysis-value">${analysis.radius.toFixed(2)} px</span></div>`;
+                html += `<div class="analysis-item"><span class="analysis-label">Diameter</span><span class="analysis-value">${analysis.diameter.toFixed(2)} px</span></div>`;
+                html += `<div class="analysis-item highlight"><span class="analysis-label">Circumference</span><span class="analysis-value">${analysis.circumference.toFixed(2)} px</span></div>`;
+                html += '<h3>Area</h3>';
+                html += `<div class="analysis-item"><span class="analysis-label">Area</span><span class="analysis-value">${analysis.area.toFixed(2)} px²</span></div>`;
+                html += '<h3>Center</h3>';
+                html += `<div class="analysis-item"><span class="analysis-label">X</span><span class="analysis-value">${analysis.centerX.toFixed(1)} px</span></div>`;
+                html += `<div class="analysis-item"><span class="analysis-label">Y</span><span class="analysis-value">${analysis.centerY.toFixed(1)} px</span></div>`;
+                panel.innerHTML = html;
+                return;
+            }
             
             // Свойства
             if (analysis.properties.length > 0) {
