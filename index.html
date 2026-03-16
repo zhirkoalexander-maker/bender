@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Geometry Studio - Draw & Analyze Shapes</title>
     <style>
         * {
@@ -425,6 +428,9 @@
     </div>
 
     <script>
+        // Force cache clear on load
+        console.log('Geometry Studio v2.0.1 - Select mode enabled, Freeform drawing added');
+        
         const state = {
             currentShape: 'triangle',
             currentColor: '#FF6B6B',
@@ -901,6 +907,7 @@
             }
             hideModal();
         }
+        // Version: 2.0.1 - Select mode, Freeform drawing, Fixed shape info
     </script>
 </body>
 </html>
