@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Studio</title>
+    <title>Geometry Studio - Draw & Analyze Shapes</title>
     <style>
         * {
             margin: 0;
@@ -13,510 +13,792 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
-            background: #fafafa;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
         header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 60px 20px;
-            text-align: center;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-size: 24px;
             font-weight: 700;
         }
 
-        header p {
-            font-size: 1.2em;
-            opacity: 0.95;
-            margin-bottom: 30px;
+        .status-badge {
+            background: #10b981;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
-        .btn-group {
+        .main {
             display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+            flex: 1;
+            gap: 10px;
+            padding: 10px;
+            background: #0f0c29;
+            overflow: hidden;
         }
 
-        .btn {
-            padding: 12px 30px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: white;
-            color: #667eea;
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: white;
-            color: #667eea;
-        }
-
-        .btn-primary:hover {
-            background: #f0f0f0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        section {
-            margin: 80px 0;
-            padding: 40px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        section h2 {
-            font-size: 2em;
-            margin-bottom: 30px;
-            color: #667eea;
-        }
-
-        section h3 {
-            font-size: 1.3em;
-            color: #667eea;
-            margin: 25px 0 15px 0;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-
-        .feature-card {
-            padding: 25px;
-            border-left: 4px solid #667eea;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-
-        .feature-card h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            color: #666;
-            margin: 0;
-        }
-
-        code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            color: #d63384;
-        }
-
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin: 20px 0;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
-
-        pre code {
-            background: none;
-            color: #f8f8f2;
+        .sidebar {
+            width: 220px;
+            background: #1a0e3d;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            overflow-y: auto;
             padding: 0;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        table th, table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #667eea;
         }
 
-        table th {
-            background: #f4f4f4;
-            font-weight: 600;
-            color: #667eea;
+        .panel {
+            padding: 15px;
+            border-bottom: 1px solid #2a2a4a;
         }
 
-        table tr:hover {
-            background: #f9f9f9;
+        .panel h2 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: #f093fb;
         }
 
-        ul, ol {
-            margin: 15px 0 15px 30px;
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        ul li, ol li {
-            margin: 8px 0;
-        }
-
-        p {
-            margin: 15px 0;
-        }
-
-        footer {
-            background: #2d3748;
+        button {
+            padding: 10px 12px;
+            border: 1px solid #2a2a4a;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            text-align: center;
-            padding: 40px 20px;
-            margin-top: 60px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-        footer p {
-            margin: 10px 0;
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4);
+            border-color: #f093fb;
         }
 
-        footer a {
-            color: #667eea;
-            text-decoration: none;
+        button.active {
+            box-shadow: 0 0 20px #f093fb;
+            border-color: #f093fb;
         }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        .keyboard-shortcuts {
+        .color-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
         }
 
-        .shortcut {
+        .color-btn {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+
+        .color-btn.active {
+            border-color: white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .checkbox {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #f4f4f4;
-            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #a0a0a0;
         }
 
-        .shortcut kbd {
-            background: #667eea;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-weight: 600;
+        .checkbox input {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            accent-color: #f093fb;
+        }
+
+        .center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .info-panel {
+            background: #1a0e3d;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 15px;
+            height: 100px;
+        }
+
+        .info-panel h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #f093fb;
+        }
+
+        .info-content p {
+            font-size: 11px;
+            margin-bottom: 3px;
+            color: #a0a0a0;
             font-family: monospace;
         }
 
-        .toc {
-            background: #f0f4ff;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
+        .right-sidebar {
+            width: 220px;
+            background: #1a0e3d;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            overflow-y: auto;
+            padding: 0;
         }
 
-        .toc a {
-            display: block;
-            color: #667eea;
-            text-decoration: none;
-            margin: 8px 0;
-            padding: 5px 10px;
+        .stats-box {
+            background: #0f0c29;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            padding: 10px;
         }
 
-        .toc a:hover {
-            background: white;
-            border-radius: 3px;
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 11px;
         }
 
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2em;
-            }
+        .stat-label {
+            color: #a0a0a0;
+        }
 
-            header p {
-                font-size: 1em;
-            }
+        .stat-value {
+            color: #f093fb;
+            font-weight: bold;
+        }
 
-            section {
-                margin: 40px 0;
-                padding: 20px;
-            }
+        footer {
+            background: #1a0e3d;
+            border-top: 1px solid #2a2a4a;
+            padding: 10px;
+            text-align: center;
+            font-size: 10px;
+            color: #a0a0a0;
+        }
 
-            section h2 {
-                font-size: 1.5em;
-            }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
 
-            .btn-group {
-                flex-direction: column;
-                gap: 10px;
-            }
+        .modal-content {
+            background: #1a0e3d;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 30px;
+            width: 300px;
+        }
 
-            .btn {
-                width: 100%;
-            }
+        .modal-content h2 {
+            margin-bottom: 15px;
+            color: #f093fb;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #0f0c29;
+            border: 1px solid #2a2a4a;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Geometry Studio</h1>
-        <p>Draw shapes, run calculations, transform them around</p>
-        <div class="btn-group">
-            <a href="#demo" class="btn btn-primary">Try Demo</a>
-            <a href="https://github.com/zhirkoalexander-maker/bender" class="btn">View on GitHub</a>
-            <a href="#getting-started" class="btn">Get Started</a>
-        </div>
-    </header>
-
     <div class="container">
-        <section>
-            <div class="toc">
-                <strong>Quick Navigation:</strong>
-                <a href="#what-is-it">• What is it?</a>
-                <a href="#features">• Features</a>
-                <a href="#demo">• Demo</a>
-                <a href="#getting-started">• Getting Started</a>
-                <a href="#usage">• How to Use</a>
-                <a href="#shortcuts">• Keyboard Shortcuts</a>
-                <a href="#api">• API Reference</a>
-            </div>
-        </section>
+        <header>
+            <h1>🎨 Geometry Studio</h1>
+            <div class="status-badge" id="status">Ready</div>
+        </header>
 
-        <section id="what-is-it">
-            <h2>What is it?</h2>
-            <p>A simple tool for drawing geometric shapes in your browser. Started with a desktop app for learning geometry, ended up as a web app because why not.</p>
-            <p>You can sketch shapes, get basic info about them (area, perimeter), and transform them. Nothing complicated, just functional.</p>
-        </section>
-
-        <section id="features">
-            <h2>What You Can Do</h2>
-            <div class="features">
-                <div class="feature-card">
-                    <h3>Draw Shapes</h3>
-                    <p>Triangles, squares, rectangles, circles, or freeform polygons. Click points on the canvas and hit finish.</p>
+        <div class="main">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h2>SHAPES</h2>
+                    <div class="button-group">
+                        <button class="shape-btn active" data-shape="triangle">△ Triangle</button>
+                        <button class="shape-btn" data-shape="square">▢ Square</button>
+                        <button class="shape-btn" data-shape="rectangle">▭ Rectangle</button>
+                        <button class="shape-btn" data-shape="circle">● Circle</button>
+                        <button class="shape-btn" data-shape="polygon">◈ Polygon</button>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <h3>Quick Math</h3>
-                    <p>Automatic calculations for perimeter and area. Uses the Shoelace formula for polygons.</p>
+
+                <div class="panel">
+                    <h2>COLORS</h2>
+                    <div class="color-grid">
+                        <button class="color-btn active" style="background: #FF6B6B" data-color="#FF6B6B"></button>
+                        <button class="color-btn" style="background: #4ECDC4" data-color="#4ECDC4"></button>
+                        <button class="color-btn" style="background: #45B7D1" data-color="#45B7D1"></button>
+                        <button class="color-btn" style="background: #FFA502" data-color="#FFA502"></button>
+                        <button class="color-btn" style="background: #95E1D3" data-color="#95E1D3"></button>
+                        <button class="color-btn" style="background: #F38181" data-color="#F38181"></button>
+                        <button class="color-btn" style="background: #AA96DA" data-color="#AA96DA"></button>
+                        <button class="color-btn" style="background: #FCBAD3" data-color="#FCBAD3"></button>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <h3>Transform</h3>
-                    <p>Rotate, scale, mirror horizontally or vertically. All transformations are instant.</p>
+
+                <div class="panel">
+                    <h2>TOOLS</h2>
+                    <div class="button-group">
+                        <button id="rotate-btn">🔄 Rotate</button>
+                        <button id="scale-btn">📏 Scale</button>
+                        <button id="mirror-h-btn">↔ Mirror H</button>
+                        <button id="mirror-v-btn">↕ Mirror V</button>
+                        <button id="clear-btn">🗑 Clear</button>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <h3>Grid & Snap</h3>
-                    <p>Optional grid to help you draw straight. Can turn it off if you prefer freeform.</p>
+
+                <div class="panel">
+                    <h2>OPTIONS</h2>
+                    <label class="checkbox">
+                        <input type="checkbox" id="grid-toggle" checked>
+                        <span>Show Grid</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="snap-toggle" checked>
+                        <span>Snap to Grid</span>
+                    </label>
                 </div>
-                <div class="feature-card">
-                    <h3>Save Work</h3>
-                    <p>Download your drawings as JSON. Load them back later if needed.</p>
+            </aside>
+
+            <section class="center">
+                <div class="canvas-wrapper">
+                    <canvas id="canvas" width="800" height="600"></canvas>
                 </div>
-                <div class="feature-card">
-                    <h3>Keyboard Control</h3>
-                    <p>F to finish, Z to undo, Q to clear. Standard shortcuts for fast workflow.</p>
+
+                <div class="info-panel">
+                    <h3>SHAPE INFO</h3>
+                    <div class="info-content">
+                        <p id="shape-name">No shape</p>
+                        <p id="shape-stats">Points: 0</p>
+                        <p id="shape-formula"></p>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="demo">
-            <h2>Live Demo</h2>
-            <p>The app can be used locally. Here's how to set it up:</p>
-        </section>
-
-        <section id="getting-started">
-            <h2>Getting Started</h2>
-            <h3>Quick Start</h3>
-            <pre><code>git clone https://github.com/zhirkoalexander-maker/bender.git
-cd bender/web
-
-pip install -r requirements.txt
-python app.py</code></pre>
-            <p>Then go to <code>http://localhost:5000</code></p>
-
-            <h3>Requirements</h3>
-            <ul>
-                <li>Python 3.7+</li>
-                <li>Flask (installed via requirements.txt)</li>
-            </ul>
-
-            <h3>What you get</h3>
-            <ul>
-                <li>Web interface with HTML5 Canvas</li>
-                <li>Flask API backend for calculations</li>
-                <li>Real-time shape analysis</li>
-                <li>Transform tools (rotate, scale, mirror)</li>
-                <li>Grid system with snap-to-grid</li>
-            </ul>
-        </section>
-
-        <section id="usage">
-            <h2>How to Use It</h2>
-            <ol>
-                <li>Pick a shape from the left panel</li>
-                <li>Click on the canvas to place points</li>
-                <li>Hit F, double-click, or click Finish button to complete</li>
-                <li>Use the transform tools if you want to modify it</li>
-                <li>Click Save to download as JSON</li>
-            </ol>
-
-            <h3 style="margin-top: 30px;">Basic Workflow</h3>
-            <ol>
-                <li>Select Triangle (or whatever shape)</li>
-                <li>Click three points on the canvas</li>
-                <li>Press F or double-click to finish</li>
-                <li>Area and perimeter show up at the bottom</li>
-                <li>You can rotate it, scale it, mirror it if needed</li>
-            </ol>
-        </section>
-
-        <section id="shortcuts">
-            <h2>Keyboard Shortcuts</h2>
-            <div class="keyboard-shortcuts">
-                <div class="shortcut">
-                    <kbd>F</kbd>
-                    <span>Finish current shape</span>
+            <aside class="right-sidebar">
+                <div class="panel">
+                    <h2>QUICK ACTIONS</h2>
+                    <div class="button-group">
+                        <button id="undo-btn">↶ Undo (Z)</button>
+                        <button id="finish-btn">✓ Finish (F)</button>
+                        <button id="save-btn">💾 Save</button>
+                    </div>
                 </div>
-                <div class="shortcut">
-                    <kbd>Z</kbd>
-                    <span>Undo last action</span>
+
+                <div class="panel">
+                    <h2>STATS</h2>
+                    <div class="stats-box">
+                        <div class="stat-item">
+                            <span class="stat-label">Points:</span>
+                            <span class="stat-value" id="stat-points">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Mode:</span>
+                            <span class="stat-value" id="stat-mode">▲</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Color:</span>
+                            <span class="stat-value" id="stat-color">■</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="shortcut">
-                    <kbd>Q</kbd>
-                    <span>Clear everything</span>
+
+                <div class="panel">
+                    <h2>COORDINATES</h2>
+                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0;" id="coords">X: 0, Y: 0</p>
                 </div>
-            </div>
-        </section>
+            </aside>
+        </div>
 
-        <section>
-            <h2>Project Structure</h2>
-            <p>Pretty simple layout:</p>
-            <pre><code>web/
-├── app.py              # Flask server
-├── requirements.txt    # Dependencies
-├── templates/
-│   └── index.html     # Main interface
-└── static/
-    ├── app.js         # Canvas logic
-    └── style.css      # Styling</code></pre>
-        </section>
-
-        <section>
-            <h2>Colors</h2>
-            <p>The app comes with 8 colors to choose from:</p>
-            <table>
-                <tr>
-                    <th>Color</th>
-                    <th>Hex</th>
-                </tr>
-                <tr>
-                    <td>Red</td>
-                    <td><code>#FF6B6B</code></td>
-                </tr>
-                <tr>
-                    <td>Cyan</td>
-                    <td><code>#4ECDC4</code></td>
-                </tr>
-                <tr>
-                    <td>Blue</td>
-                    <td><code>#45B7D1</code></td>
-                </tr>
-                <tr>
-                    <td>Orange</td>
-                    <td><code>#FFA502</code></td>
-                </tr>
-                <tr>
-                    <td>Mint</td>
-                    <td><code>#95E1D3</code></td>
-                </tr>
-                <tr>
-                    <td>Pink</td>
-                    <td><code>#F38181</code></td>
-                </tr>
-                <tr>
-                    <td>Purple</td>
-                    <td><code>#AA96DA</code></td>
-                </tr>
-                <tr>
-                    <td>Light Pink</td>
-                    <td><code>#FCBAD3</code></td>
-                </tr>
-            </table>
-        </section>
-
-        <section id="api">
-            <h2>API Reference</h2>
-            <p>If you're running the Flask version locally, these endpoints are available:</p>
-            <table>
-                <tr>
-                    <th>Endpoint</th>
-                    <th>Method</th>
-                    <th>What it does</th>
-                </tr>
-                <tr>
-                    <td><code>/api/analyze</code></td>
-                    <td>POST</td>
-                    <td>Get area, perimeter, shape type</td>
-                </tr>
-                <tr>
-                    <td><code>/api/rotate</code></td>
-                    <td>POST</td>
-                    <td>Rotate shape by angle</td>
-                </tr>
-                <tr>
-                    <td><code>/api/scale</code></td>
-                    <td>POST</td>
-                    <td>Scale shape by factor</td>
-                </tr>
-                <tr>
-                    <td><code>/api/mirror</code></td>
-                    <td>POST</td>
-                    <td>Mirror horizontally or vertically</td>
-                </tr>
-            </table>
-        </section>
-
-        <section>
-            <h2>What Might Come Later</h2>
-            <ul>
-                <li>SVG export (PDF too maybe)</li>
-                <li>More measurement tools</li>
-                <li>Better mobile support</li>
-                <li>Some history/undo improvements</li>
-                <li>Probably not 3D, but who knows</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>License</h2>
-            <p>MIT. Do whatever you want with it.</p>
-        </section>
+        <footer>
+            © 2024 Geometry Studio • <a href="https://github.com/zhirkoalexander-maker/bender" style="color: #f093fb; text-decoration: none;">GitHub</a>
+        </footer>
     </div>
 
-    <footer>
-        <p><strong>Geometry Studio</strong></p>
-        <p>A simple shape drawing tool</p>
-        <p><a href="https://github.com/zhirkoalexander-maker/bender">github.com/zhirkoalexander-maker/bender</a></p>
-        <p style="margin-top: 20px; opacity: 0.7; font-size: 0.9em;">© 2024 • MIT License</p>
-    </footer>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Input</h2>
+            <input type="number" id="modal-input" placeholder="Value">
+            <div class="modal-buttons">
+                <button id="modal-ok">OK</button>
+                <button id="modal-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            currentShape: 'triangle',
+            currentColor: '#FF6B6B',
+            points: [],
+            shapes: [],
+            gridEnabled: true,
+            snapEnabled: true,
+        };
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const GRID_SIZE = 20;
+        const POINT_SIZE = 8;
+
+        // Setup
+        document.addEventListener('DOMContentLoaded', () => {
+            setupListeners();
+            redraw();
+        });
+
+        function setupListeners() {
+            document.querySelectorAll('.shape-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.currentShape = btn.dataset.shape;
+                    state.points = [];
+                    updateUI();
+                    redraw();
+                });
+            });
+
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.currentColor = btn.dataset.color;
+                    updateUI();
+                });
+            });
+
+            document.getElementById('rotate-btn').addEventListener('click', () => 
+                showModal('Rotate', 'Angle:', v => rotateShape(parseFloat(v))));
+            document.getElementById('scale-btn').addEventListener('click', () => 
+                showModal('Scale', 'Factor:', v => scaleShape(parseFloat(v))));
+            document.getElementById('mirror-h-btn').addEventListener('click', () => mirrorShape('h'));
+            document.getElementById('mirror-v-btn').addEventListener('click', () => mirrorShape('v'));
+            document.getElementById('clear-btn').addEventListener('click', clearAll);
+
+            document.getElementById('undo-btn').addEventListener('click', undo);
+            document.getElementById('finish-btn').addEventListener('click', finishShape);
+            document.getElementById('save-btn').addEventListener('click', saveDrawing);
+
+            document.getElementById('grid-toggle').addEventListener('change', e => { 
+                state.gridEnabled = e.target.checked; 
+                redraw(); 
+            });
+            document.getElementById('snap-toggle').addEventListener('change', e => { 
+                state.snapEnabled = e.target.checked; 
+            });
+
+            canvas.addEventListener('click', onCanvasClick);
+            canvas.addEventListener('dblclick', finishShape);
+            canvas.addEventListener('mousemove', onCanvasMouseMove);
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'z' || e.key === 'Z') undo();
+                if (e.key === 'f' || e.key === 'F') finishShape();
+                if (e.key === 'q' || e.key === 'Q') clearAll();
+            });
+
+            document.getElementById('modal-ok').addEventListener('click', handleModalOk);
+            document.getElementById('modal-cancel').addEventListener('click', hideModal);
+            document.getElementById('modal-input').addEventListener('keydown', e => { 
+                if (e.key === 'Enter') handleModalOk(); 
+            });
+        }
+
+        function onCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            if (state.snapEnabled) {
+                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+            }
+
+            state.points.push([x, y]);
+
+            if (state.currentShape === 'square' && state.points.length === 2) {
+                createSquare();
+                finishShape();
+            } else if (state.currentShape === 'rectangle' && state.points.length === 2) {
+                createRectangle();
+                finishShape();
+            } else if (state.currentShape === 'circle' && state.points.length === 2) {
+                finishShape();
+            } else if (state.currentShape === 'triangle' && state.points.length === 3) {
+                analyzeShape();
+            }
+
+            updateUI();
+            redraw();
+        }
+
+        function onCanvasMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            document.getElementById('coords').textContent = `X: ${x}, Y: ${y}`;
+        }
+
+        function redraw() {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (state.gridEnabled) {
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < canvas.width; i += GRID_SIZE) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, canvas.height);
+                    ctx.stroke();
+                }
+                for (let i = 0; i < canvas.height; i += GRID_SIZE) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(canvas.width, i);
+                    ctx.stroke();
+                }
+            }
+
+            state.shapes.forEach(shape => drawShape(shape.points, shape.color, false));
+
+            if (state.points.length > 0) {
+                if (state.currentShape === 'circle' && state.points.length >= 1) {
+                    const [cx, cy] = state.points[0];
+                    if (state.points.length >= 2) {
+                        const [px, py] = state.points[1];
+                        const radius = Math.hypot(px - cx, py - cy);
+                        ctx.strokeStyle = state.currentColor;
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.fillStyle = state.currentColor + '30';
+                        ctx.fill();
+                    }
+                } else {
+                    ctx.strokeStyle = state.currentColor;
+                    ctx.lineWidth = 3;
+                    for (let i = 0; i < state.points.length - 1; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(state.points[i][0], state.points[i][1]);
+                        ctx.lineTo(state.points[i + 1][0], state.points[i + 1][1]);
+                        ctx.stroke();
+                    }
+                }
+
+                state.points.forEach((point, idx) => {
+                    drawPoint(point[0], point[1], idx + 1);
+                });
+            }
+        }
+
+        function drawShape(points, color, dashed = false) {
+            if (points.length < 2) return;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+
+            if (dashed) ctx.setLineDash([5, 5]);
+
+            for (let i = 0; i < points.length; i++) {
+                const p1 = points[i];
+                const p2 = points[(i + 1) % points.length];
+                ctx.beginPath();
+                ctx.moveTo(p1[0], p1[1]);
+                ctx.lineTo(p2[0], p2[1]);
+                ctx.stroke();
+            }
+
+            ctx.setLineDash([]);
+
+            if (points.length >= 3) {
+                ctx.fillStyle = color + '20';
+                ctx.beginPath();
+                ctx.moveTo(points[0][0], points[0][1]);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i][0], points[i][1]);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function drawPoint(x, y, label = '') {
+            ctx.fillStyle = '#FFFF00';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, POINT_SIZE, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            if (label) {
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, x, y);
+            }
+        }
+
+        function createSquare() {
+            if (state.points.length < 2) return;
+            const [x1, y1] = state.points[0];
+            const [x2, y2] = state.points[1];
+            const side = Math.hypot(x2 - x1, y2 - y1);
+            const dx = (x2 - x1) / side;
+            const dy = (y2 - y1) / side;
+            const px = -dy;
+            const py = dx;
+
+            state.points = [
+                [x1, y1],
+                [x1 + dx * side, y1 + dy * side],
+                [x1 + dx * side + px * side, y1 + dy * side + py * side],
+                [x1 + px * side, y1 + py * side]
+            ];
+        }
+
+        function createRectangle() {
+            if (state.points.length < 2) return;
+            const [x1, y1] = state.points[0];
+            const [x2, y2] = state.points[1];
+            state.points = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]];
+        }
+
+        function analyzeShape() {
+            if (state.points.length < 2) return;
+
+            const sides = [];
+            for (let i = 0; i < state.points.length; i++) {
+                const p1 = state.points[i];
+                const p2 = state.points[(i + 1) % state.points.length];
+                const dist = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+                sides.push(dist);
+            }
+
+            const perimeter = sides.reduce((a, b) => a + b, 0);
+
+            let area = 0;
+            for (let i = 0; i < state.points.length; i++) {
+                const p1 = state.points[i];
+                const p2 = state.points[(i + 1) % state.points.length];
+                area += p1[0] * p2[1] - p2[0] * p1[1];
+            }
+            area = Math.abs(area) / 2;
+
+            const n = state.points.length;
+            let shapeName = 'Polygon';
+            if (n === 3) shapeName = 'Triangle';
+            else if (n === 4) shapeName = 'Quadrilateral';
+
+            document.getElementById('shape-name').textContent = `Shape: ${shapeName}`;
+            document.getElementById('shape-stats').textContent = `Vertices: ${n} | Perimeter: ${perimeter.toFixed(1)}px | Area: ${area.toFixed(1)}px²`;
+            document.getElementById('shape-formula').textContent = `Sides: ${sides.map(s => s.toFixed(0)).join(', ')}`;
+        }
+
+        function rotateShape(angle) {
+            if (state.points.length < 2) { alert('Draw first'); return; }
+            const cx = state.points.reduce((a, p) => a + p[0], 0) / state.points.length;
+            const cy = state.points.reduce((a, p) => a + p[1], 0) / state.points.length;
+            const rad = angle * Math.PI / 180;
+            state.points = state.points.map(([x, y]) => [
+                cx + (x - cx) * Math.cos(rad) - (y - cy) * Math.sin(rad),
+                cy + (x - cx) * Math.sin(rad) + (y - cy) * Math.cos(rad)
+            ]);
+            redraw();
+        }
+
+        function scaleShape(factor) {
+            if (state.points.length < 2 || factor <= 0) { alert('Draw first'); return; }
+            const cx = state.points.reduce((a, p) => a + p[0], 0) / state.points.length;
+            const cy = state.points.reduce((a, p) => a + p[1], 0) / state.points.length;
+            state.points = state.points.map(([x, y]) => [
+                cx + (x - cx) * factor,
+                cy + (y - cy) * factor
+            ]);
+            redraw();
+        }
+
+        function mirrorShape(axis) {
+            if (state.points.length < 2) { alert('Draw first'); return; }
+            if (axis === 'h') {
+                const cy = state.points.reduce((a, p) => a + p[1], 0) / state.points.length;
+                state.points = state.points.map(([x, y]) => [x, 2 * cy - y]);
+            } else {
+                const cx = state.points.reduce((a, p) => a + p[0], 0) / state.points.length;
+                state.points = state.points.map(([x, y]) => [2 * cx - x, y]);
+            }
+            redraw();
+        }
+
+        function finishShape() {
+            if (state.points.length >= 3) {
+                analyzeShape();
+                state.shapes.push({ points: [...state.points], color: state.currentColor });
+                state.points = [];
+                updateUI();
+                redraw();
+                document.getElementById('status').textContent = '✓ Done!';
+            } else {
+                alert('Need 3+ points');
+            }
+        }
+
+        function saveDrawing() {
+            if (state.points.length === 0 && state.shapes.length === 0) {
+                alert('Nothing to save');
+                return;
+            }
+            const data = {
+                timestamp: new Date().toLocaleString(),
+                shapes: state.shapes,
+            };
+            const el = document.createElement('a');
+            el.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2)));
+            el.setAttribute('download', `drawing_${Date.now()}.json`);
+            el.style.display = 'none';
+            document.body.appendChild(el);
+            el.click();
+            document.body.removeChild(el);
+            document.getElementById('status').textContent = '✓ Saved!';
+        }
+
+        function clearAll() {
+            state.points = [];
+            state.shapes = [];
+            updateUI();
+            redraw();
+            document.getElementById('status').textContent = 'Ready';
+        }
+
+        function undo() {
+            if (state.points.length > 0) {
+                state.points.pop();
+            } else if (state.shapes.length > 0) {
+                state.shapes.pop();
+            }
+            updateUI();
+            redraw();
+        }
+
+        function updateUI() {
+            document.getElementById('stat-points').textContent = state.points.length;
+            document.getElementById('stat-color').style.color = state.currentColor;
+        }
+
+        let modalCallback = null;
+
+        function showModal(title, label, callback) {
+            modalCallback = callback;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-input').placeholder = label;
+            document.getElementById('modal-input').value = '';
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('modal-input').focus();
+        }
+
+        function hideModal() {
+            document.getElementById('modal').style.display = 'none';
+            modalCallback = null;
+        }
+
+        function handleModalOk() {
+            const value = document.getElementById('modal-input').value;
+            if (value && modalCallback) {
+                modalCallback(value);
+            }
+            hideModal();
+        }
+    </script>
 </body>
 </html>
