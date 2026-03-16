@@ -311,11 +311,12 @@
                 <div class="panel">
                     <h2>SHAPES</h2>
                     <div class="button-group">
-                        <button class="shape-btn active" data-shape="triangle">△ Triangle</button>
-                        <button class="shape-btn" data-shape="square">▢ Square</button>
-                        <button class="shape-btn" data-shape="rectangle">▭ Rectangle</button>
-                        <button class="shape-btn" data-shape="circle">● Circle</button>
-                        <button class="shape-btn" data-shape="polygon">◈ Polygon</button>
+                        <button class="shape-btn" data-shape="select">Select</button>
+                        <button class="shape-btn active" data-shape="triangle">Triangle</button>
+                        <button class="shape-btn" data-shape="square">Square</button>
+                        <button class="shape-btn" data-shape="rectangle">Rectangle</button>
+                        <button class="shape-btn" data-shape="circle">Circle</button>
+                        <button class="shape-btn" data-shape="polygon">Freeform</button>
                     </div>
                 </div>
 
@@ -429,6 +430,7 @@
             currentColor: '#FF6B6B',
             points: [],
             shapes: [],
+            selectedShapeIdx: null,
             gridEnabled: true,
             snapEnabled: true,
         };
@@ -507,13 +509,28 @@
             let x = (e.clientX - rect.left) * canvas.width / rect.width;
             let y = (e.clientY - rect.top) * canvas.height / rect.height;
 
+            // Select mode - click to select shape
+            if (state.currentShape === 'select') {
+                state.selectedShapeIdx = null;
+                for (let i = state.shapes.length - 1; i >= 0; i--) {
+                    if (isPointInShape(x, y, state.shapes[i].points)) {
+                        state.selectedShapeIdx = i;
+                        analyzeSelectedShape(i);
+                        redraw();
+                        return;
+                    }
+                }
+                redraw();
+                return;
+            }
+
             if (state.snapEnabled) {
                 x = Math.round(x / GRID_SIZE) * GRID_SIZE;
                 y = Math.round(y / GRID_SIZE) * GRID_SIZE;
             }
 
-            // Check if clicking near first point to close polygon
-            if (state.points.length >= 3) {
+            // Check if clicking near first point to close polygon (freeform mode)
+            if (state.currentShape === 'polygon' && state.points.length >= 3) {
                 const [fx, fy] = state.points[0];
                 const dist = Math.hypot(x - fx, y - fy);
                 if (dist < 15) {
@@ -533,10 +550,9 @@
             } else if (state.currentShape === 'circle' && state.points.length === 2) {
                 finishShape();
             } else if (state.currentShape === 'triangle' && state.points.length === 3) {
-                analyzeShape();
+                finishShape();
             }
-
-            updateUI();
+            displayShapeInfo();            updateUI();
             redraw();
         }
 
@@ -568,7 +584,10 @@
                 }
             }
 
-            state.shapes.forEach(shape => drawShape(shape.points, shape.color, false));
+            state.shapes.forEach((shape, idx) => {
+                const isSelected = idx === state.selectedShapeIdx;
+                drawShape(shape.points, shape.color, false, isSelected);
+            });
 
             if (state.points.length > 0) {
                 if (state.currentShape === 'circle' && state.points.length >= 1) {
@@ -601,11 +620,11 @@
             }
         }
 
-        function drawShape(points, color, dashed = false) {
+        function drawShape(points, color, dashed = false, selected = false) {
             if (points.length < 2) return;
 
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = selected ? '#333' : color;
+            ctx.lineWidth = selected ? 5 : 3;
 
             if (dashed) ctx.setLineDash([5, 5]);
 
@@ -621,7 +640,7 @@
             ctx.setLineDash([]);
 
             if (points.length >= 3) {
-                ctx.fillStyle = color + '20';
+                ctx.fillStyle = selected ? color + '60' : color + '20';
                 ctx.beginPath();
                 ctx.moveTo(points[0][0], points[0][1]);
                 for (let i = 1; i < points.length; i++) {
@@ -630,6 +649,18 @@
                 ctx.closePath();
                 ctx.fill();
             }
+        }
+
+        function isPointInShape(px, py, points) {
+            if (points.length < 3) return false;
+            let inside = false;
+            for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+                const [xi, yi] = points[i];
+                const [xj, yj] = points[j];
+                const intersect = ((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
         }
 
         function drawPoint(x, y, label = '') {
@@ -672,15 +703,15 @@
             state.points = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]];
         }
 
-        function analyzeShape() {
-            if (state.points.length < 3) return;
+        function analyzeShape(points) {
+            if (!points || points.length < 3) return null;
 
-            const n = state.points.length;
+            const n = points.length;
             const sides = [];
             
             for (let i = 0; i < n; i++) {
-                const p1 = state.points[i];
-                const p2 = state.points[(i + 1) % n];
+                const p1 = points[i];
+                const p2 = points[(i + 1) % n];
                 const dist = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
                 sides.push(dist);
             }
@@ -690,8 +721,8 @@
             // Shoelace formula for area
             let area = 0;
             for (let i = 0; i < n; i++) {
-                const p1 = state.points[i];
-                const p2 = state.points[(i + 1) % n];
+                const p1 = points[i];
+                const p2 = points[(i + 1) % n];
                 area += p1[0] * p2[1] - p2[0] * p1[1];
             }
             area = Math.abs(area) / 2;
@@ -702,57 +733,98 @@
             else if (n === 5) shapeName = 'Pentagon';
             else if (n === 6) shapeName = 'Hexagon';
 
-            document.getElementById('shape-name').textContent = `${shapeName} (${n} points)`;
-            document.getElementById('shape-stats').textContent = `Perimeter: ${perimeter.toFixed(1)}px`;
-            document.getElementById('shape-formula').textContent = `Area: ${area.toFixed(1)}px²`;
+            return { shapeName, n, perimeter, area, sides };
+        }
+
+        function analyzeSelectedShape(idx) {
+            const shape = state.shapes[idx];
+            const info = analyzeShape(shape.points);
+            if (info) {
+                document.getElementById('shape-name').textContent = `${info.shapeName} (${info.n} points)`;
+                document.getElementById('shape-stats').textContent = `Perimeter: ${info.perimeter.toFixed(1)}px`;
+                document.getElementById('shape-formula').textContent = `Area: ${info.area.toFixed(1)}px²`;
+            }
+        }
+
+        function displayShapeInfo() {
+            if (state.points.length >= 3) {
+                const info = analyzeShape(state.points);
+                if (info) {
+                    document.getElementById('shape-name').textContent = `${info.shapeName} (${info.n} points)`;
+                    document.getElementById('shape-stats').textContent = `Perimeter: ${info.perimeter.toFixed(1)}px`;
+                    document.getElementById('shape-formula').textContent = `Area: ${info.area.toFixed(1)}px²`;
+                }
+            }
         }
 
         function rotateShape(angle) {
-            if (state.points.length < 3) { alert('Need 3+ points'); return; }
-            const cx = state.points.reduce((a, p) => a + p[0], 0) / state.points.length;
-            const cy = state.points.reduce((a, p) => a + p[1], 0) / state.points.length;
+            let points = state.selectedShapeIdx !== null ? state.shapes[state.selectedShapeIdx].points : state.points;
+            if (points.length < 3) { alert('Need 3+ points'); return; }
+            const cx = points.reduce((a, p) => a + p[0], 0) / points.length;
+            const cy = points.reduce((a, p) => a + p[1], 0) / points.length;
             const rad = angle * Math.PI / 180;
-            state.points = state.points.map(([x, y]) => [
+            const rotated = points.map(([x, y]) => [
                 cx + (x - cx) * Math.cos(rad) - (y - cy) * Math.sin(rad),
                 cy + (x - cx) * Math.sin(rad) + (y - cy) * Math.cos(rad)
             ]);
-            analyzeShape();
+            if (state.selectedShapeIdx !== null) {
+                state.shapes[state.selectedShapeIdx].points = rotated;
+                analyzeSelectedShape(state.selectedShapeIdx);
+            } else {
+                state.points = rotated;
+                displayShapeInfo();
+            }
             redraw();
             document.getElementById('status').textContent = 'Rotated';
         }
 
         function scaleShape(factor) {
-            if (state.points.length < 3 || factor <= 0) { alert('Need 3+ points'); return; }
-            const cx = state.points.reduce((a, p) => a + p[0], 0) / state.points.length;
-            const cy = state.points.reduce((a, p) => a + p[1], 0) / state.points.length;
-            state.points = state.points.map(([x, y]) => [
+            let points = state.selectedShapeIdx !== null ? state.shapes[state.selectedShapeIdx].points : state.points;
+            if (points.length < 3 || factor <= 0) { alert('Need 3+ points'); return; }
+            const cx = points.reduce((a, p) => a + p[0], 0) / points.length;
+            const cy = points.reduce((a, p) => a + p[1], 0) / points.length;
+            const scaled = points.map(([x, y]) => [
                 cx + (x - cx) * factor,
                 cy + (y - cy) * factor
             ]);
-            analyzeShape();
+            if (state.selectedShapeIdx !== null) {
+                state.shapes[state.selectedShapeIdx].points = scaled;
+                analyzeSelectedShape(state.selectedShapeIdx);
+            } else {
+                state.points = scaled;
+                displayShapeInfo();
+            }
             redraw();
             document.getElementById('status').textContent = 'Scaled';
         }
 
         function mirrorShape(axis) {
-            if (state.points.length < 3) { alert('Need 3+ points'); return; }
+            let points = state.selectedShapeIdx !== null ? state.shapes[state.selectedShapeIdx].points : state.points;
+            if (points.length < 3) { alert('Need 3+ points'); return; }
+            let mirrored;
             if (axis === 'h') {
-                const cy = state.points.reduce((a, p) => a + p[1], 0) / state.points.length;
-                state.points = state.points.map(([x, y]) => [x, 2 * cy - y]);
+                const cy = points.reduce((a, p) => a + p[1], 0) / points.length;
+                mirrored = points.map(([x, y]) => [x, 2 * cy - y]);
             } else {
-                const cx = state.points.reduce((a, p) => a + p[0], 0) / state.points.length;
-                state.points = state.points.map(([x, y]) => [2 * cx - x, y]);
+                const cx = points.reduce((a, p) => a + p[0], 0) / points.length;
+                mirrored = points.map(([x, y]) => [2 * cx - x, y]);
             }
-            analyzeShape();
+            if (state.selectedShapeIdx !== null) {
+                state.shapes[state.selectedShapeIdx].points = mirrored;
+                analyzeSelectedShape(state.selectedShapeIdx);
+            } else {
+                state.points = mirrored;
+                displayShapeInfo();
+            }
             redraw();
             document.getElementById('status').textContent = 'Mirrored';
         }
 
         function finishShape() {
             if (state.points.length >= 3) {
-                analyzeShape();
                 state.shapes.push({ points: [...state.points], color: state.currentColor });
                 state.points = [];
+                state.selectedShapeIdx = null;
                 document.getElementById('shape-name').textContent = 'No shape';
                 document.getElementById('shape-stats').textContent = 'Points: 0';
                 document.getElementById('shape-formula').textContent = '';
