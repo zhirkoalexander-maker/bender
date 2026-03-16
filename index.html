@@ -512,6 +512,169 @@
             margin: 2px 2px 2px 0;
         }
 
+        .builder-panel {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin: 15px;
+            border-radius: 0;
+        }
+
+        .builder-panel label {
+            display: block;
+            font-size: 10px;
+            color: #666;
+            margin-top: 8px;
+            margin-bottom: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .builder-panel select,
+        .builder-panel input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #333;
+            font-size: 11px;
+            border-radius: 0;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+        }
+
+        .builder-panel input:focus,
+        .builder-panel select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .builder-inputs {
+            display: none;
+        }
+
+        .builder-inputs.active {
+            display: block;
+        }
+
+        .builder-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            margin-top: 5px;
+        }
+
+        .builder-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+        }
+
+        .help-modal.active {
+            display: flex;
+        }
+
+        .help-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .help-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .help-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .help-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .help-body {
+            padding: 25px;
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .help-body h3 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+            font-size: 14px;
+        }
+
+        .help-body p {
+            margin: 8px 0;
+        }
+
+        .help-body ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .help-body li {
+            margin: 5px 0;
+        }
+
+        .help-section {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .help-section:last-child {
+            border-bottom: none;
+        }
+
+        .key {
+            display: inline-block;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
         footer {
             background: #f5f5f5;
             border-top: 1px solid #ddd;
@@ -582,6 +745,7 @@
             <h1>Geometry Studio</h1>
             <div class="header-buttons">
                 <button id="projects-btn">📁 Projects</button>
+                <button id="help-btn" style="background: #f5a623; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.3s ease;">❓ Help</button>
                 <div class="status-badge" id="status">Ready</div>
             </div>
         </header>
@@ -714,6 +878,56 @@
                 </div>
 
                 <div class="panel">
+                    <h2>BUILDER</h2>
+                    <p style="font-size: 10px; color: #999; margin-bottom: 8px;">Create shapes by dimensions</p>
+                    <label>Shape Type</label>
+                    <select id="builder-type" onchange="updateBuilderInputs()">
+                        <option value="equilateral">Equilateral Triangle</option>
+                        <option value="isosceles">Isosceles Triangle</option>
+                        <option value="right">Right Triangle</option>
+                        <option value="square">Square</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="pentagon">Regular Pentagon</option>
+                        <option value="hexagon">Regular Hexagon</option>
+                    </select>
+                    <div class="builder-inputs active" id="equilateral-inputs">
+                        <label>Side Length (px)</label>
+                        <input type="number" id="equilateral-side" value="80" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="isosceles-inputs">
+                        <label>Base (px)</label>
+                        <input type="number" id="isosceles-base" value="100" min="10" max="200">
+                        <label>Sides (px)</label>
+                        <input type="number" id="isosceles-side" value="80" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="right-inputs">
+                        <label>Side A (px)</label>
+                        <input type="number" id="right-a" value="60" min="10" max="200">
+                        <label>Side B (px)</label>
+                        <input type="number" id="right-b" value="80" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="square-inputs">
+                        <label>Side (px)</label>
+                        <input type="number" id="square-side" value="80" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="rectangle-inputs">
+                        <label>Width (px)</label>
+                        <input type="number" id="rectangle-width" value="120" min="10" max="200">
+                        <label>Height (px)</label>
+                        <input type="number" id="rectangle-height" value="60" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="pentagon-inputs">
+                        <label>Side Length (px)</label>
+                        <input type="number" id="pentagon-side" value="60" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="hexagon-inputs">
+                        <label>Side Length (px)</label>
+                        <input type="number" id="hexagon-side" value="60" min="10" max="200">
+                    </div>
+                    <button class="builder-btn" onclick="buildShape()">Build Shape</button>
+                </div>
+
+                <div class="panel">
                     <h2>CURSOR</h2>
                     <p style="font-size: 11px; color: #666; margin: 5px 0;" id="coords">X: 0, Y: 0</p>
                 </div>
@@ -723,6 +937,107 @@
         <footer>
             © 2024 Geometry Studio • <a href="https://github.com/zhirkoalexander-maker/bender" style="color: #333; text-decoration: none;">GitHub</a>
         </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="help-modal">
+        <div class="help-content">
+            <div class="help-header">
+                <h2>How to Use Geometry Studio</h2>
+                <button class="help-close" onclick="toggleHelpModal()">&times;</button>
+            </div>
+            <div class="help-body">
+                <div class="help-section">
+                    <h3>🎨 Drawing Shapes</h3>
+                    <p><strong>Basic workflow:</strong></p>
+                    <ul>
+                        <li>Pick a shape type from the SHAPES panel (Triangle, Square, etc.)</li>
+                        <li>Click on the canvas to place points</li>
+                        <li>For most shapes, click at least 3 points</li>
+                        <li>Press <span class="key">F</span> or double-click to finish</li>
+                    </ul>
+                    <p><strong>Freeform mode:</strong> Pick "Freeform" to draw custom polygons with any number of sides. Click the first point again to close the shape.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>🔍 Selection & Analysis</h3>
+                    <p>Click "Select" button, then click any shape on the canvas to select it. The ANALYSIS panel will show:</p>
+                    <ul>
+                        <li><strong>All side lengths</strong> - exact measurements</li>
+                        <li><strong>All angles</strong> - in degrees</li>
+                        <li><strong>Perimeter</strong> - total outline</li>
+                        <li><strong>Area</strong> - using real geometry formulas</li>
+                        <li><strong>Triangle type</strong> - equilateral, isosceles, right-angled</li>
+                        <li><strong>Heights & medians</strong> - important geometric lines</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>🔨 Building Shapes by Dimensions</h3>
+                    <p>Don't want to draw manually? Use the BUILDER panel:</p>
+                    <ul>
+                        <li>Pick a shape type from the dropdown</li>
+                        <li>Enter the dimensions in pixels</li>
+                        <li>Click "Build Shape" to automatically create it</li>
+                        <li>The shape appears on canvas with all calculations ready</li>
+                    </ul>
+                    <p><strong>Available shapes:</strong> Equilateral/Isosceles/Right triangles, Squares, Rectangles, Regular Pentagons & Hexagons.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>📊 Visualization Tools</h3>
+                    <p>Under DISPLAY panel, you can toggle geometric constructions:</p>
+                    <ul>
+                        <li><strong>Medians</strong> - lines from vertices to opposite midpoints</li>
+                        <li><strong>Altitudes</strong> - perpendicular lines from vertices to sides</li>
+                        <li><strong>Bisectors</strong> - angle bisectors from each vertex</li>
+                        <li><strong>Circumcircle</strong> - the circle through all triangle vertices</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>✏️ Transformations</h3>
+                    <p>Select a shape, then use the TOOLS panel:</p>
+                    <ul>
+                        <li><strong>Rotate</strong> - enter angle in degrees</li>
+                        <li><strong>Scale</strong> - enter multiplier (2 = double size)</li>
+                        <li><strong>Mirror H/V</strong> - flip horizontally or vertically</li>
+                    </ul>
+                    <p>All calculations update automatically after transformation.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>💾 Saving Your Work</h3>
+                    <p>Click "📁 Projects" button to manage your drawings:</p>
+                    <ul>
+                        <li><strong>New Project</strong> - create a new workspace</li>
+                        <li><strong>Save Project</strong> - saves current work to browser</li>
+                        <li><strong>Load/Rename/Delete</strong> - manage existing projects</li>
+                    </ul>
+                    <p>Projects are stored locally in your browser - no account needed.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>⌨️ Keyboard Shortcuts</h3>
+                    <ul>
+                        <li><span class="key">F</span> - Finish current shape</li>
+                        <li><span class="key">Z</span> - Undo last point</li>
+                        <li><span class="key">Q</span> - Clear everything</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>💡 Tips for Learning</h3>
+                    <ul>
+                        <li>Draw a triangle and check if the angle sum equals 180°</li>
+                        <li>Build a right triangle and verify the Pythagorean theorem (a² + b² = c²)</li>
+                        <li>Compare medians and altitudes to understand their differences</li>
+                        <li>Use the circumcircle visualization to see triangle properties</li>
+                        <li>Transform shapes and watch how calculations change</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Projects Panel -->
@@ -976,6 +1291,9 @@
                 refreshProjectsList();
                 toggleProjectsPanel();
             });
+
+            // Help button
+            document.getElementById('help-btn').addEventListener('click', toggleHelpModal);
 
             document.querySelectorAll('.shape-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1819,7 +2137,137 @@
             panel.innerHTML = html;
         }
 
-        // Version: 3.0 - Educational analysis system
+        // ===== SHAPE BUILDER FUNCTIONS =====
+        function updateBuilderInputs() {
+            const type = document.getElementById('builder-type').value;
+            document.querySelectorAll('.builder-inputs').forEach(el => el.classList.remove('active'));
+            document.getElementById(type + '-inputs').classList.add('active');
+        }
+
+        function buildShape() {
+            const type = document.getElementById('builder-type').value;
+            let points = [];
+
+            try {
+                switch(type) {
+                    case 'equilateral':
+                        const side = parseFloat(document.getElementById('equilateral-side').value);
+                        points = buildEquilateralTriangle(side);
+                        break;
+                    case 'isosceles':
+                        const base = parseFloat(document.getElementById('isosceles-base').value);
+                        const isoSide = parseFloat(document.getElementById('isosceles-side').value);
+                        points = buildIsoscelesTriangle(base, isoSide);
+                        break;
+                    case 'right':
+                        const a = parseFloat(document.getElementById('right-a').value);
+                        const b = parseFloat(document.getElementById('right-b').value);
+                        points = buildRightTriangle(a, b);
+                        break;
+                    case 'square':
+                        const sqSide = parseFloat(document.getElementById('square-side').value);
+                        points = buildSquare(sqSide);
+                        break;
+                    case 'rectangle':
+                        const width = parseFloat(document.getElementById('rectangle-width').value);
+                        const height = parseFloat(document.getElementById('rectangle-height').value);
+                        points = buildRectangle(width, height);
+                        break;
+                    case 'pentagon':
+                        const penSide = parseFloat(document.getElementById('pentagon-side').value);
+                        points = buildRegularPolygon(5, penSide);
+                        break;
+                    case 'hexagon':
+                        const hexSide = parseFloat(document.getElementById('hexagon-side').value);
+                        points = buildRegularPolygon(6, hexSide);
+                        break;
+                }
+
+                if (points.length >= 3) {
+                    state.shapes.push({ points, color: state.currentColor });
+                    state.points = [];
+                    state.selectedShapeIdx = state.shapes.length - 1;
+                    analyzeSelectedShape(state.selectedShapeIdx);
+                    redraw();
+                    document.getElementById('status').textContent = '✓ Shape built!';
+                    setTimeout(() => { document.getElementById('status').textContent = 'Ready'; }, 2000);
+                }
+            } catch (e) {
+                alert('Invalid input. Check dimensions.');
+            }
+        }
+
+        function buildEquilateralTriangle(side) {
+            const height = (side * Math.sqrt(3)) / 2;
+            const cx = 400, cy = 250;
+            return [
+                [cx, cy - height / 2],
+                [cx - side / 2, cy + height / 2],
+                [cx + side / 2, cy + height / 2]
+            ];
+        }
+
+        function buildIsoscelesTriangle(base, side) {
+            const height = Math.sqrt(side * side - (base / 2) * (base / 2));
+            const cx = 400, cy = 250;
+            return [
+                [cx, cy - height / 2],
+                [cx - base / 2, cy + height / 2],
+                [cx + base / 2, cy + height / 2]
+            ];
+        }
+
+        function buildRightTriangle(a, b) {
+            const cx = 400, cy = 250;
+            return [
+                [cx - a / 2, cy - b / 2],
+                [cx + a / 2, cy - b / 2],
+                [cx - a / 2, cy + b / 2]
+            ];
+        }
+
+        function buildSquare(side) {
+            const cx = 400, cy = 250;
+            const half = side / 2;
+            return [
+                [cx - half, cy - half],
+                [cx + half, cy - half],
+                [cx + half, cy + half],
+                [cx - half, cy + half]
+            ];
+        }
+
+        function buildRectangle(width, height) {
+            const cx = 400, cy = 250;
+            const hw = width / 2, hh = height / 2;
+            return [
+                [cx - hw, cy - hh],
+                [cx + hw, cy - hh],
+                [cx + hw, cy + hh],
+                [cx - hw, cy + hh]
+            ];
+        }
+
+        function buildRegularPolygon(sides, sideLength) {
+            const radius = sideLength / (2 * Math.sin(Math.PI / sides));
+            const cx = 400, cy = 250;
+            const points = [];
+            
+            for (let i = 0; i < sides; i++) {
+                const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+                points.push([
+                    cx + radius * Math.cos(angle),
+                    cy + radius * Math.sin(angle)
+                ]);
+            }
+            return points;
+        }
+
+        function toggleHelpModal() {
+            document.getElementById('help-modal').classList.toggle('active');
+        }
+
+        // Version: 3.1 - Shape builder and help system
     </script>
 </body>
 </html>
