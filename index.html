@@ -817,6 +817,10 @@
                         <input type="checkbox" id="show-bisector">
                         <span>Show Bisectors</span>
                     </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="show-circumcircle">
+                        <span>Show Circumcircle</span>
+                    </label>
                 </div>
 
                 <div class="panel">
@@ -1106,6 +1110,7 @@
             showMedian: true,
             showAltitude: false,
             showBisector: false,
+            showCircumcircle: false,
             currentProjectName: 'Untitled Project',
         };
 
@@ -1339,7 +1344,7 @@
             document.getElementById('median-btn').addEventListener('click', () => toggleVisualization('median'));
             document.getElementById('altitude-btn').addEventListener('click', () => toggleVisualization('altitude'));
             document.getElementById('bisector-btn').addEventListener('click', () => toggleVisualization('bisector'));
-            document.getElementById('circumcircle-btn').addEventListener('click', drawCircumcircle);
+            document.getElementById('circumcircle-btn').addEventListener('click', () => toggleVisualization('circumcircle'));
             
             document.getElementById('show-median').addEventListener('change', e => {
                 state.showMedian = e.target.checked;
@@ -1351,6 +1356,10 @@
             });
             document.getElementById('show-bisector').addEventListener('change', e => {
                 state.showBisector = e.target.checked;
+                redraw();
+            });
+            document.getElementById('show-circumcircle').addEventListener('change', e => {
+                state.showCircumcircle = e.target.checked;
                 redraw();
             });
 
@@ -1486,6 +1495,7 @@
                     if (state.showMedian) drawMedians(shape.points);
                     if (state.showAltitude) drawAltitudes(shape.points);
                     if (state.showBisector) drawBisectors(shape.points);
+                    if (state.showCircumcircle && shape.points.length === 3) drawCircumcircleShape(shape.points);
                 }
             });
 
@@ -1524,6 +1534,7 @@
                     if (state.showMedian) drawMedians(state.points);
                     if (state.showAltitude) drawAltitudes(state.points);
                     if (state.showBisector) drawBisectors(state.points);
+                    if (state.showCircumcircle && state.points.length === 3) drawCircumcircleShape(state.points);
                 }
             }
         }
@@ -1654,8 +1665,35 @@
             } else if (type === 'bisector') {
                 state.showBisector = !state.showBisector;
                 document.getElementById('show-bisector').checked = state.showBisector;
+            } else if (type === 'circumcircle') {
+                if (points.length > 3) {
+                    alert('Circumcircle works with triangles only');
+                    return;
+                }
+                state.showCircumcircle = !state.showCircumcircle;
+                document.getElementById('show-circumcircle').checked = state.showCircumcircle;
             }
             redraw();
+        }
+
+        function drawCircumcircleShape(points) {
+            if (!points || points.length !== 3) return;
+            
+            const [p1, p2, p3] = points;
+            const circumcenter = getCircumcenter(p1, p2, p3);
+            const radius = Math.hypot(p1[0] - circumcenter[0], p1[1] - circumcenter[1]);
+            
+            ctx.strokeStyle = '#FFA502';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(circumcenter[0], circumcenter[1], radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Draw circumcenter point
+            ctx.fillStyle = '#FFA502';
+            ctx.beginPath();
+            ctx.arc(circumcenter[0], circumcenter[1], 4, 0, Math.PI * 2);
+            ctx.fill();
         }
 
         function drawCircumcircle() {
@@ -1663,21 +1701,7 @@
             if (points.length < 3) { alert('Need 3+ points'); return; }
             if (points.length > 3) { alert('Works with triangles only'); return; }
             
-            const [p1, p2, p3] = points;
-            const circumcenter = getCircumcenter(p1, p2, p3);
-            const radius = Math.hypot(p1[0] - circumcenter[0], p1[1] - circumcenter[1]);
-            
-            ctx.strokeStyle = '#FFA502';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(circumcenter[0], circumcenter[1], radius, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#FFA502';
-            ctx.beginPath();
-            ctx.arc(circumcenter[0], circumcenter[1], 5, 0, Math.PI * 2);
-            ctx.fill();
-            
+            drawCircumcircleShape(points);
             document.getElementById('status').textContent = '✓ Circumcircle drawn';
         }
 
