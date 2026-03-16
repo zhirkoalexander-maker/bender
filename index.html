@@ -453,6 +453,65 @@
             font-weight: bold;
         }
 
+        .analysis-panel {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 0;
+            padding: 12px;
+            margin: 15px;
+            font-size: 11px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .analysis-panel h3 {
+            margin: 10px 0 8px 0;
+            color: #333;
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding: 4px 0;
+            border-bottom: 1px dotted #eee;
+        }
+
+        .analysis-item.highlight {
+            background: #f0f0ff;
+            padding: 4px 6px;
+            margin-left: -6px;
+            margin-right: -6px;
+            padding-left: 6px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .analysis-label {
+            color: #666;
+        }
+
+        .analysis-value {
+            color: #333;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .type-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+            margin: 2px 2px 2px 0;
+        }
+
         footer {
             background: #f5f5f5;
             border-top: 1px solid #ddd;
@@ -648,7 +707,14 @@
                 </div>
 
                 <div class="panel">
-                    <h2>COORDINATES</h2>
+                    <h2>ANALYSIS</h2>
+                    <div class="analysis-panel" id="analysis-panel">
+                        <p style="color: #999; font-size: 11px; text-align: center;">Select or draw a shape</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>CURSOR</h2>
                     <p style="font-size: 11px; color: #666; margin: 5px 0;" id="coords">X: 0, Y: 0</p>
                 </div>
             </aside>
@@ -1042,6 +1108,11 @@
             const x = Math.round((e.clientX - rect.left) * canvas.width / rect.width);
             const y = Math.round((e.clientY - rect.top) * canvas.height / rect.height);
             document.getElementById('coords').textContent = `X: ${x}, Y: ${y}`;
+            
+            // Обновляем анализ в реальном времени
+            if (state.points.length >= 3) {
+                displayShapeInfo();
+            }
         }
 
         function redraw() {
@@ -1365,22 +1436,28 @@
 
         function analyzeSelectedShape(idx) {
             const shape = state.shapes[idx];
-            const info = analyzeShape(shape.points);
-            if (info) {
-                document.getElementById('shape-name').textContent = `${info.shapeName} (${info.n} points)`;
-                document.getElementById('shape-stats').textContent = `Perimeter: ${info.perimeter.toFixed(1)}px`;
-                document.getElementById('shape-formula').textContent = `Area: ${info.area.toFixed(1)}px²`;
+            const analysis = analyzeShape(shape.points);
+            displayAnalysis(analysis);
+            
+            // Также обновляем старые элементы для совместимости
+            if (analysis) {
+                document.getElementById('shape-name').textContent = `${analysis.type}`;
+                document.getElementById('shape-stats').textContent = `Points: ${shape.points.length}`;
+                document.getElementById('shape-formula').textContent = `Area: ${analysis.area.toFixed(1)}px²`;
             }
         }
 
         function displayShapeInfo() {
             if (state.points.length >= 3) {
-                const info = analyzeShape(state.points);
-                if (info) {
-                    document.getElementById('shape-name').textContent = `${info.shapeName} (${info.n} points)`;
-                    document.getElementById('shape-stats').textContent = `Perimeter: ${info.perimeter.toFixed(1)}px`;
-                    document.getElementById('shape-formula').textContent = `Area: ${info.area.toFixed(1)}px²`;
+                const analysis = analyzeShape(state.points);
+                if (analysis) {
+                    document.getElementById('shape-name').textContent = `${analysis.type} (${state.points.length} points)`;
+                    document.getElementById('shape-stats').textContent = `Perimeter: ${analysis.perimeter.toFixed(1)}px`;
+                    document.getElementById('shape-formula').textContent = `Area: ${analysis.area.toFixed(1)}px²`;
+                    displayAnalysis(analysis);
                 }
+            } else {
+                displayAnalysis(null);
             }
         }
 
@@ -1530,7 +1607,219 @@
             }
             hideModal();
         }
-        // Version: 2.0.1 - Select mode, Freeform drawing, Fixed shape info
+
+        // ===== EDUCATIONAL ANALYSIS FUNCTIONS =====
+        function distance(p1, p2) {
+            return Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+        }
+
+        function angle(p1, p2, p3) {
+            // Угол между векторами p1->p2 и p1->p3
+            const v1 = [p2[0] - p1[0], p2[1] - p1[1]];
+            const v2 = [p3[0] - p1[0], p3[1] - p1[1]];
+            const dot = v1[0] * v2[0] + v1[1] * v2[1];
+            const det = v1[0] * v2[1] - v1[1] * v2[0];
+            const angle = Math.atan2(det, dot);
+            return Math.abs(angle) * (180 / Math.PI);
+        }
+
+        function polygonArea(points) {
+            // Формула Шоэлейса (Shoelace formula)
+            let area = 0;
+            for (let i = 0; i < points.length; i++) {
+                const j = (i + 1) % points.length;
+                area += points[i][0] * points[j][1];
+                area -= points[j][0] * points[i][1];
+            }
+            return Math.abs(area / 2);
+        }
+
+        function analyzeShape(points) {
+            if (!points || points.length < 3) return null;
+
+            const n = points.length;
+            const sides = [];
+            
+            // Вычисляем все стороны
+            for (let i = 0; i < n; i++) {
+                const d = distance(points[i], points[(i + 1) % n]);
+                sides.push(d);
+            }
+
+            const perimeter = sides.reduce((a, b) => a + b, 0);
+            const area = polygonArea(points);
+            
+            // Вычисляем все углы
+            const angles = [];
+            for (let i = 0; i < n; i++) {
+                const a = angle(
+                    points[i],
+                    points[(i - 1 + n) % n],
+                    points[(i + 1) % n]
+                );
+                angles.push(a);
+            }
+
+            let analysis = {
+                sides,
+                perimeter,
+                area,
+                angles,
+                type: 'Polygon',
+                properties: []
+            };
+
+            // Анализ для треугольников
+            if (n === 3) {
+                analysis.type = 'Triangle';
+                
+                // Сортируем стороны
+                const sorted = [...sides].sort((a, b) => a - b);
+                
+                // Проверяем тип треугольника
+                if (Math.abs(sorted[0] - sorted[1]) < 0.1 && Math.abs(sorted[1] - sorted[2]) < 0.1) {
+                    analysis.properties.push('Equilateral');
+                } else if (Math.abs(sorted[0] - sorted[1]) < 0.1 || Math.abs(sorted[1] - sorted[2]) < 0.1) {
+                    analysis.properties.push('Isosceles');
+                }
+                
+                // Проверяем прямоугольность (теорема Пифагора)
+                const a2 = sorted[0] * sorted[0];
+                const b2 = sorted[1] * sorted[1];
+                const c2 = sorted[2] * sorted[2];
+                if (Math.abs(a2 + b2 - c2) < 1) {
+                    analysis.properties.push('Right-angled');
+                }
+                
+                // Вычисляем высоты
+                analysis.heights = [];
+                for (let i = 0; i < 3; i++) {
+                    const p = points[i];
+                    const p1 = points[(i + 1) % 3];
+                    const p2 = points[(i + 2) % 3];
+                    const base = distance(p1, p2);
+                    const height = (2 * area) / base;
+                    analysis.heights.push(height);
+                }
+                
+                // Вычисляем медиану
+                analysis.medians = [];
+                for (let i = 0; i < 3; i++) {
+                    const p = points[i];
+                    const mid = [
+                        (points[(i + 1) % 3][0] + points[(i + 2) % 3][0]) / 2,
+                        (points[(i + 1) % 3][1] + points[(i + 2) % 3][1]) / 2
+                    ];
+                    const median = distance(p, mid);
+                    analysis.medians.push(median);
+                }
+                
+                // Полупериметр для формулы Герона
+                const p = perimeter / 2;
+                const areaHeron = Math.sqrt(p * (p - sides[0]) * (p - sides[1]) * (p - sides[2]));
+                analysis.areaHeron = areaHeron;
+            }
+
+            // Анализ для четырехугольников
+            if (n === 4) {
+                const sorted = [...sides].sort((a, b) => a - b);
+                
+                if (Math.abs(sorted[0] - sorted[1]) < 0.1 && 
+                    Math.abs(sorted[2] - sorted[3]) < 0.1 && 
+                    Math.abs(sorted[0] - sorted[2]) < 0.1) {
+                    analysis.type = 'Square';
+                    analysis.properties.push('Square');
+                } else if (Math.abs(sorted[0] - sorted[1]) < 0.1 && 
+                           Math.abs(sorted[2] - sorted[3]) < 0.1) {
+                    analysis.type = 'Rectangle';
+                    analysis.properties.push('Rectangle');
+                } else if (Math.abs(sides[0] - sides[1]) < 0.1 && 
+                           Math.abs(sides[2] - sides[3]) < 0.1) {
+                    analysis.properties.push('Parallelogram');
+                }
+                
+                // Проверяем диагонали
+                const diag1 = distance(points[0], points[2]);
+                const diag2 = distance(points[1], points[3]);
+                analysis.diagonals = [diag1, diag2];
+            }
+
+            return analysis;
+        }
+
+        function displayAnalysis(analysis) {
+            const panel = document.getElementById('analysis-panel');
+            if (!analysis) {
+                panel.innerHTML = '<p style="color: #999; font-size: 11px; text-align: center;">Select or draw a shape</p>';
+                return;
+            }
+
+            let html = '';
+            
+            // Тип фигуры
+            html += `<h3>${analysis.type}</h3>`;
+            
+            // Свойства
+            if (analysis.properties.length > 0) {
+                html += '<div style="margin-bottom: 8px;">';
+                analysis.properties.forEach(prop => {
+                    html += `<span class="type-badge">${prop}</span>`;
+                });
+                html += '</div>';
+            }
+            
+            // Стороны
+            html += '<h3>Sides</h3>';
+            analysis.sides.forEach((side, i) => {
+                html += `<div class="analysis-item"><span class="analysis-label">Side ${i+1}</span><span class="analysis-value">${side.toFixed(2)} px</span></div>`;
+            });
+            
+            // Периметр
+            html += `<div class="analysis-item highlight"><span class="analysis-label">Perimeter</span><span class="analysis-value">${analysis.perimeter.toFixed(2)} px</span></div>`;
+            
+            // Площадь
+            html += '<h3>Area</h3>';
+            html += `<div class="analysis-item"><span class="analysis-label">Area</span><span class="analysis-value">${analysis.area.toFixed(2)} px²</span></div>`;
+            
+            // Для треугольников - площадь по Герону
+            if (analysis.areaHeron !== undefined) {
+                html += `<div class="analysis-item"><span class="analysis-label">Heron's Formula</span><span class="analysis-value">${analysis.areaHeron.toFixed(2)} px²</span></div>`;
+            }
+            
+            // Углы
+            html += '<h3>Angles</h3>';
+            analysis.angles.forEach((a, i) => {
+                html += `<div class="analysis-item"><span class="analysis-label">∠${i+1}</span><span class="analysis-value">${a.toFixed(1)}°</span></div>`;
+            });
+            
+            // Высоты (для треугольников)
+            if (analysis.heights) {
+                html += '<h3>Heights</h3>';
+                analysis.heights.forEach((h, i) => {
+                    html += `<div class="analysis-item"><span class="analysis-label">h${i+1}</span><span class="analysis-value">${h.toFixed(2)} px</span></div>`;
+                });
+            }
+            
+            // Медианы (для треугольников)
+            if (analysis.medians) {
+                html += '<h3>Medians</h3>';
+                analysis.medians.forEach((m, i) => {
+                    html += `<div class="analysis-item"><span class="analysis-label">m${i+1}</span><span class="analysis-value">${m.toFixed(2)} px</span></div>`;
+                });
+            }
+            
+            // Диагонали (для четырехугольников)
+            if (analysis.diagonals) {
+                html += '<h3>Diagonals</h3>';
+                analysis.diagonals.forEach((d, i) => {
+                    html += `<div class="analysis-item"><span class="analysis-label">d${i+1}</span><span class="analysis-value">${d.toFixed(2)} px</span></div>`;
+                });
+            }
+            
+            panel.innerHTML = html;
+        }
+
+        // Version: 3.0 - Educational analysis system
     </script>
 </body>
 </html>
