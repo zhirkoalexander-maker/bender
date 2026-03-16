@@ -5,8 +5,7 @@ A web-based tool for drawing and analyzing geometric shapes. Simple, functional,
 ## Quick Links
 
 - **[Website](https://zhirkoalexander-maker.github.io/bender/)** - Full documentation and features
-- **[Try it Online](https://zhirkoalexander-maker.github.io/bender/)** - No setup needed
-- **[Web App](./web/)** - Run locally with Python
+- **[Web App](./web/)** - Run locally with Python and Flask
 
 ## What is it?
 
