@@ -759,6 +759,7 @@
                         <button class="shape-btn active" data-shape="triangle">Triangle</button>
                         <button class="shape-btn" data-shape="square">Square</button>
                         <button class="shape-btn" data-shape="rectangle">Rectangle</button>
+                        <button class="shape-btn" data-shape="trapezoid">Trapezoid</button>
                         <button class="shape-btn" data-shape="circle">Circle</button>
                         <button class="shape-btn" data-shape="polygon">Freeform</button>
                     </div>
@@ -900,6 +901,7 @@
                         <option value="generic">Generic Triangle</option>
                         <option value="square">Square</option>
                         <option value="rectangle">Rectangle</option>
+                        <option value="trapezoid">Trapezoid</option>
                         <option value="pentagon">Regular Pentagon</option>
                         <option value="hexagon">Regular Hexagon</option>
                     </select>
@@ -944,6 +946,14 @@
                     <div class="builder-inputs" id="hexagon-inputs">
                         <label>Side Length (px)</label>
                         <input type="number" id="hexagon-side" value="60" min="10" max="200">
+                    </div>
+                    <div class="builder-inputs" id="trapezoid-inputs">
+                        <label>Top Base (px)</label>
+                        <input type="number" id="trapezoid-top" value="60" min="10" max="200">
+                        <label>Bottom Base (px)</label>
+                        <input type="number" id="trapezoid-bottom" value="100" min="10" max="200">
+                        <label>Height (px)</label>
+                        <input type="number" id="trapezoid-height" value="60" min="10" max="200">
                     </div>
                     <button class="builder-btn" onclick="buildShape()">Build Shape</button>
                 </div>
@@ -1441,6 +1451,8 @@
                 finishShape();
             } else if (state.currentShape === 'rectangle' && state.points.length === 2) {
                 createRectangle();
+                finishShape();
+            } else if (state.currentShape === 'trapezoid' && state.points.length === 4) {
                 finishShape();
             } else if (state.currentShape === 'circle' && state.points.length === 2) {
                 finishShape();
@@ -2103,7 +2115,10 @@
         }
 
         function finishShape() {
-            const minPoints = state.currentShape === 'circle' ? 2 : 3;
+            let minPoints = 3;
+            if (state.currentShape === 'circle') minPoints = 2;
+            else if (state.currentShape === 'trapezoid') minPoints = 4;
+            
             if (state.points.length >= minPoints) {
                 state.shapes.push({ 
                     points: [...state.points], 
@@ -2480,6 +2495,12 @@
                         const height = parseFloat(document.getElementById('rectangle-height').value);
                         points = buildRectangle(width, height);
                         break;
+                    case 'trapezoid':
+                        const topBase = parseFloat(document.getElementById('trapezoid-top').value);
+                        const bottomBase = parseFloat(document.getElementById('trapezoid-bottom').value);
+                        const trapHeight = parseFloat(document.getElementById('trapezoid-height').value);
+                        points = buildTrapezoid(topBase, bottomBase, trapHeight);
+                        break;
                     case 'pentagon':
                         const penSide = parseFloat(document.getElementById('pentagon-side').value);
                         points = buildRegularPolygon(5, penSide);
@@ -2552,6 +2573,19 @@
                 [cx + hw, cy - hh],
                 [cx + hw, cy + hh],
                 [cx - hw, cy + hh]
+            ];
+        }
+
+        function buildTrapezoid(topBase, bottomBase, height) {
+            const cx = 400, cy = 250;
+            const topHalf = topBase / 2;
+            const bottomHalf = bottomBase / 2;
+            const hh = height / 2;
+            return [
+                [cx - topHalf, cy - hh],
+                [cx + topHalf, cy - hh],
+                [cx + bottomHalf, cy + hh],
+                [cx - bottomHalf, cy + hh]
             ];
         }
 
