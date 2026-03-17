@@ -1467,6 +1467,11 @@
                 displayShapeInfo();
             }
 
+            // Redraw to show preview line when drawing
+            if (state.points.length > 0 && state.currentShape !== 'select') {
+                redraw();
+            }
+
             // Redraw when ruler is active to show preview
             if (state.showRuler && state.rulerPoints.length === 1) {
                 redraw();
@@ -1542,6 +1547,11 @@
                     if (state.showAltitude) drawAltitudes(state.points);
                     if (state.showBisector) drawBisectors(state.points);
                     if (state.showCircumcircle && state.points.length === 3) drawCircumcircleShape(state.points);
+                }
+
+                // Draw preview of next line/side
+                if (state.points.length > 0 && state.currentShape !== 'circle') {
+                    drawPreviewLine(state.points);
                 }
             }
 
@@ -1846,6 +1856,44 @@
                 ctx.fillStyle = '#9C27B0';
                 ctx.fillText(text, labelX, labelY);
             }
+        }
+
+        function drawPreviewLine(points) {
+            if (state.currentShape === 'select' || state.currentShape === 'circle' || state.showRuler) return;
+            if (points.length === 0) return;
+
+            const lastPoint = points[points.length - 1];
+            const mouseX = state.mouseX;
+            const mouseY = state.mouseY;
+
+            // Draw preview line from last point to mouse
+            ctx.strokeStyle = state.currentColor;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.globalAlpha = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(lastPoint[0], lastPoint[1]);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.setLineDash([]);
+
+            // Draw distance label
+            const distance = Math.hypot(mouseX - lastPoint[0], mouseY - lastPoint[1]);
+            const midX = (lastPoint[0] + mouseX) / 2;
+            const midY = (lastPoint[1] + mouseY) / 2;
+
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            ctx.fillRect(midX - 28, midY - 12, 56, 24);
+            ctx.strokeStyle = state.currentColor;
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(midX - 28, midY - 12, 56, 24);
+
+            ctx.fillStyle = state.currentColor;
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(distance.toFixed(0) + 'px', midX, midY);
         }
 
         function drawRulerMeasurement() {
