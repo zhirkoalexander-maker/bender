@@ -1,103 +1,68 @@
 # Geometry Studio
 
-A web-based tool for learning geometry by drawing and analyzing shapes. Built to actually help with math homework and understanding geometric concepts.
+Draw shapes on a canvas and get instant calculations. No measuring with a protractor, no calculator - just draw and the numbers show up automatically.
 
-**[👉 Try it here](https://zhirkoalexander-maker.github.io/bender/)** - No installation needed, works in browser.
+**[Try it](https://zhirkoalexander-maker.github.io/bender/)** - opens in your browser, no download or setup.
 
-## Why I made this
+## Why it exists
 
-I kept using calc for geometry homework but it got annoying - you'd draw something by hand, measure it with a protractor, do the math... lots of room for mistakes. So I built a tool where you just draw the shape and it calculates everything for you. No more "did I measure at the right angle?"
+I got tired of the geometry homework workflow: draw a shape, measure everything with a ruler and protractor, punch numbers into a calculator. Too many places to mess up. Built this so you just draw it and the tool figures out all the angles, lengths, area, whatever.
 
-The older version was desktop. The web version is way cleaner and actually useful in class.
+## What you can do
 
-## What it does
+Draw pretty much anything - triangles, squares, rectangles, circles, or irregular shapes. The tool calculates:
+- All side lengths
+- All angles
+- Perimeter and area
+- For triangles specifically: heights, medians, and what type (equilateral, isosceles, etc.)
+- Heron's formula for verification
 
-### Drawing
-- Draw triangles, squares, rectangles, circles, or freeform shapes
-- Snap to grid to keep things aligned
-- Point your cursor where you want it, click, done
-- Press F to finish the shape (or double-click)
+If you don't feel like drawing, you can build shapes by typing in dimensions instead. It has templates for common shapes.
 
-### Real-time Analysis (the useful part)
-When you draw a shape, you instantly get:
-- **Side lengths** - all of them
-- **Angles** - in degrees
-- **Perimeter** - total outline length
-- **Area** - using real geometric formulas
-- **Triangle detection** - if it's equilateral, isosceles, or right-angled
-- **Heights & medians** - perpendiculars and lines to midpoints
-- **Heron's formula** - alternative way to verify area
+You can also flip shapes around, rotate them, make them bigger or smaller. The calculations stay accurate.
 
-For example: draw a triangle, and it'll immediately tell you the side lengths, all three angles, whether it's a right triangle, what the heights are, and the exact area. Perfect for checking your work.
+## Visualizing geometry
 
-### Project Management
-- Save multiple projects locally
-- Switch between them without losing work
-- Each project keeps all your shapes
-- Quick save button, no dialogs
+Turn on visual aids to understand what's happening:
+- Medians (lines from corners to opposite side midpoints)
+- Altitudes (perpendiculars from corners to opposite sides)  
+- Angle bisectors (lines that split angles in half)
+- Circumcircle (circle touching all corners of a triangle)
 
-### Visualization Tools
-Toggle these on/off to see:
-- **Medians** (red dashed lines) - from vertices to opposite side midpoints
-- **Altitudes** (blue lines) - perpendiculars from vertices to sides  
-- **Angle bisectors** (purple lines) - splits angles in half
-- **Circumcircle** (orange) - circle that passes through all vertices
+Helps with actually understanding the geometry instead of just memorizing it.
 
-Perfect for understanding the geometry you're learning about.
+## Basic flow
 
-### Transformations
-- Rotate by any angle
-- Scale up or down
-- Mirror horizontally or vertically
-- Updates all calculations automatically
+1. Pick a shape type on the left
+2. Click on the canvas to place points
+3. Press F or double-click when done
+4. Numbers appear in the analysis panel
+5. Save your work using the Projects button
 
-## How to use it
+## Keys
 
-1. Pick a shape type (Triangle, Square, etc.) or use Freeform for custom shapes
-2. Click points on the canvas (grid helps with alignment)
-3. Press F when done (or double-click to close)
-4. All the math happens instantly in the Analysis panel
-5. Use Select mode to pick existing shapes and inspect them
-6. Save to a project when you want to come back later
+- **F** - finish shape
+- **Z** - undo last point
+- **Q** - clear everything
 
-## Keyboard shortcuts
+## How it works
 
-| Key | What it does |
-|-----|------------|
-| **F** | Finish current shape |
-| **Z** | Undo last point |
-| **Q** | Clear everything |
+Everything runs in your browser. No servers, no uploading. Your projects save locally so they stick around.
 
-## What makes it different
+Built with HTML5 Canvas and JavaScript. Math uses actual geometric formulas - Shoelace formula for area, proper angle calculations, all that.
 
-Most drawing tools are just... drawing. This one actually calculates. You get:
+## Run it
 
-- **Instant feedback** - see all the numbers the moment you finish
-- **Real formulas** - not approximations. Uses Shoelace formula for area, angle calculation, Heron's formula for triangles
-- **Learning features** - highlights triangle types, shows geometric constructions (medians, altitudes, bisectors)
-- **Project management** - save your work, come back to it later
-- **No backend needed** - everything runs in your browser, nothing sent to servers
+**[https://zhirkoalexander-maker.github.io/bender/](https://zhirkoalexander-maker.github.io/bender/)**
 
-## Technical details
-
-- Built with HTML5 Canvas and vanilla JavaScript
-- All math calculations happen client-side
-- Projects saved in browser's localStorage
-- Works offline (once the page loads)
-- No external dependencies except the browser
-
-## Try it
-
-**[👉 https://zhirkoalexander-maker.github.io/bender/](https://zhirkoalexander-maker.github.io/bender/)**
-
-Or run locally:
+Or locally:
 
 ```bash
 cd web
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`
+Then `http://localhost:8000`
 
 ---
 

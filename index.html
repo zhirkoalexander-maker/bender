@@ -963,87 +963,45 @@
     <div id="help-modal" class="help-modal">
         <div class="help-content">
             <div class="help-header">
-                <h2>How to Use Geometry Studio</h2>
+                <h2>How to Use This</h2>
                 <button class="help-close" onclick="toggleHelpModal()">&times;</button>
             </div>
             <div class="help-body">
                 <div class="help-section">
-                    <h3>Drawing Shapes</h3>
-                    <p><strong>Basic workflow:</strong></p>
-                    <ul>
-                        <li>Pick a shape type from the SHAPES panel (Triangle, Square, etc.)</li>
-                        <li>Click on the canvas to place points</li>
-                        <li>For most shapes, click at least 3 points</li>
-                        <li>Press <span class="key">F</span> or double-click to finish</li>
-                    </ul>
-                    <p><strong>Freeform mode:</strong> Pick "Freeform" to draw custom polygons with any number of sides. Click the first point again to close the shape.</p>
+                    <h3>Drawing</h3>
+                    <p>Pick a shape type on the left (Triangle, Square, etc.). Click points on the canvas where you want them. Most shapes need at least 3 points - just keep clicking. When you're done, press F or double-click to finish.</p>
+                    <p>If you want to draw something with a weird number of sides, pick "Freeform" instead. Click however many points you need, then click the first point again to close the shape.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Selection & Analysis</h3>
-                    <p>Click "Select" button, then click any shape on the canvas to select it. The ANALYSIS panel will show:</p>
-                    <ul>
-                        <li><strong>All side lengths</strong> - exact measurements</li>
-                        <li><strong>All angles</strong> - in degrees</li>
-                        <li><strong>Perimeter</strong> - total outline</li>
-                        <li><strong>Area</strong> - using real geometry formulas</li>
-                        <li><strong>Triangle type</strong> - equilateral, isosceles, right-angled</li>
-                        <li><strong>Heights & medians</strong> - important geometric lines</li>
-                    </ul>
+                    <h3>The Numbers</h3>
+                    <p>When you draw something, the tool figures out everything automatically. For any shape, you get side lengths, angles, perimeter, and area. For triangles, it also shows you the heights and medians. It identifies what type of triangle it is (equilateral, isosceles, right angle, etc).</p>
+                    <p>Click Select mode and then click on a shape to pick it. The full analysis shows up in the right panel.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Building Shapes by Dimensions</h3>
-                    <p>Don't want to draw manually? Use the BUILDER panel:</p>
-                    <ul>
-                        <li>Pick a shape type from the dropdown</li>
-                        <li>Enter the dimensions in pixels</li>
-                        <li>Click "Build Shape" to automatically create it</li>
-                        <li>The shape appears on canvas with all calculations ready</li>
-                    </ul>
-                    <p><strong>Available shapes:</strong> Equilateral/Isosceles/Right triangles, Squares, Rectangles, Regular Pentagons & Hexagons.</p>
+                    <h3>Building Instead of Drawing</h3>
+                    <p>Don't feel like drawing? Use the BUILDER panel below. Pick a shape type, enter the dimensions in pixels, and it builds a perfect shape. Works for all the common stuff - equilateral triangles, isosceles triangles, right triangles, squares, rectangles, pentagons, hexagons.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Visualization Tools</h3>
-                    <p>Under DISPLAY panel, you can toggle geometric constructions:</p>
-                    <ul>
-                        <li><strong>Medians</strong> - lines from vertices to opposite midpoints</li>
-                        <li><strong>Altitudes</strong> - perpendicular lines from vertices to sides</li>
-                        <li><strong>Bisectors</strong> - angle bisectors from each vertex</li>
-                        <li><strong>Circumcircle</strong> - the circle through all triangle vertices</li>
-                    </ul>
+                    <h3>Visual Aids</h3>
+                    <p>If you want to see what medians or altitudes actually look like visually, flip those checkboxes in the DISPLAY panel. Medians are lines from corners to the midpoint of the opposite side. Altitudes are perpendicular lines from corners. Angle bisectors split angles in half. Circumcircle is the circle that touches all three corners of a triangle. Toggle them on and off to see what they look like.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Transformations</h3>
-                    <p>Select a shape, then use the TOOLS panel:</p>
-                    <ul>
-                        <li><strong>Rotate</strong> - enter angle in degrees</li>
-                        <li><strong>Scale</strong> - enter multiplier (2 = double size)</li>
-                        <li><strong>Mirror H/V</strong> - flip horizontally or vertically</li>
-                    </ul>
-                    <p>All calculations update automatically after transformation.</p>
+                    <h3>Moving and Changing Shapes</h3>
+                    <p>Select a shape, then use the transform buttons - Rotate (enter degrees), Scale (enter how many times bigger or smaller), or Mirror to flip it. All the calculations update automatically.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Saving Your Work</h3>
-                    <p>Click "Projects" button to manage your drawings:</p>
-                    <ul>
-                        <li><strong>New Project</strong> - create a new workspace</li>
-                        <li><strong>Save Project</strong> - saves current work to browser</li>
-                        <li><strong>Load/Rename/Delete</strong> - manage existing projects</li>
-                    </ul>
-                    <p>Projects are stored locally in your browser - no account needed.</p>
+                    <h3>Saving</h3>
+                    <p>Click the Projects button to save your work. Everything saves to your browser locally - no account, no uploading. Come back later and load your project. You can rename or delete projects too.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Keyboard Shortcuts</h3>
-                    <ul>
-                        <li><span class="key">F</span> - Finish current shape</li>
-                        <li><span class="key">Z</span> - Undo last point</li>
-                        <li><span class="key">Q</span> - Clear everything</li>
-                    </ul>
+                    <h3>Keyboard</h3>
+                    <p><span class="key">F</span> finishes the shape. <span class="key">Z</span> undoes your last point. <span class="key">Q</span> clears everything.</p>
                 </div>
             </div>
         </div>
