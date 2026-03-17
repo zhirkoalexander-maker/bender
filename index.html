@@ -791,6 +791,7 @@
                 <div class="panel">
                     <h2>SHAPE TOOLS</h2>
                     <div class="button-group">
+                        <button id="preview-btn" style="background: #2196F3; color: white;" title="Show next side preview while drawing">🔍 Preview</button>
                         <button id="label-sides-btn" style="background: #FF6B6B; color: white;" title="Show length of each side">📏 Label Sides</button>
                         <button id="label-angles-btn" style="background: #9C27B0; color: white;" title="Show angle at each vertex">∠ Label Angles</button>
                         <button id="label-shape-btn" style="background: #4ECDC4; color: white;" title="Show shape type name (Triangle, Square, etc)">🏷 Label Shape</button>
@@ -1063,6 +1064,7 @@
             showLabels: false,
             showAngles: false,
             showRuler: false,
+            showPreview: true,
             rulerPoints: [],
             mouseX: 0,
             mouseY: 0,
@@ -1331,6 +1333,11 @@
                 redraw();
             });
             
+            document.getElementById('preview-btn').addEventListener('click', () => {
+                state.showPreview = !state.showPreview;
+                document.getElementById('preview-btn').style.opacity = state.showPreview ? '1' : '0.7';
+            });
+            
             document.getElementById('show-median').addEventListener('change', e => {
                 state.showMedian = e.target.checked;
                 redraw();
@@ -1468,7 +1475,7 @@
             }
 
             // Redraw to show preview line when drawing
-            if (state.points.length > 0 && state.currentShape !== 'select') {
+            if (state.showPreview && state.points.length > 0 && state.currentShape !== 'select' && state.currentShape !== 'circle') {
                 redraw();
             }
 
@@ -1859,7 +1866,7 @@
         }
 
         function drawPreviewLine(points) {
-            if (state.currentShape === 'select' || state.currentShape === 'circle' || state.showRuler) return;
+            if (!state.showPreview || state.currentShape === 'select' || state.currentShape === 'circle' || state.showRuler) return;
             if (points.length === 0) return;
 
             const lastPoint = points[points.length - 1];
