@@ -837,6 +837,10 @@
                         <input type="checkbox" id="snap-toggle" checked>
                         <span>Snap to Grid</span>
                     </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="ruler-toggle">
+                        <span>Show Ruler (20px marks)</span>
+                    </label>
                 </div>
             </aside>
 
@@ -1074,7 +1078,7 @@
             showLabels: false,
             showAngles: false,
             showRuler: false,
-            showPreview: true,
+            showRulerMarks: false,
             rulerPoints: [],
             mouseX: 0,
             mouseY: 0,
@@ -1377,6 +1381,11 @@
             document.getElementById('snap-toggle').addEventListener('change', e => { 
                 state.snapEnabled = e.target.checked; 
             });
+            
+            document.getElementById('ruler-toggle').addEventListener('change', e => { 
+                state.showRulerMarks = e.target.checked;
+                redraw();
+            });
 
             canvas.addEventListener('click', onCanvasClick);
             canvas.addEventListener('dblclick', finishShape);
@@ -1516,6 +1525,39 @@
                     ctx.moveTo(0, i);
                     ctx.lineTo(canvas.width, i);
                     ctx.stroke();
+                }
+            }
+
+            if (state.showRulerMarks) {
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.font = 'bold 10px Arial';
+                ctx.fillStyle = '#000000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                
+                const markInterval = GRID_SIZE * 4; // Every 4 cells = 20px
+                
+                // Vertical marks
+                for (let i = 0; i < canvas.width; i += markInterval) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, 8);
+                    ctx.stroke();
+                    ctx.fillText('20px', i, 10);
+                }
+                
+                // Horizontal marks
+                for (let i = 0; i < canvas.height; i += markInterval) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(8, i);
+                    ctx.stroke();
+                    ctx.save();
+                    ctx.translate(10, i);
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.fillText('20px', 0, 0);
+                    ctx.restore();
                 }
             }
 
