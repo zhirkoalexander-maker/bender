@@ -395,7 +395,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            cursor: crosshair;
+            cursor: none;
         }
 
         .info-panel {
@@ -1600,6 +1600,12 @@
             if (state.showRuler) {
                 drawRulerMeasurement();
             }
+
+            // Draw custom cursor (small black dot)
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(state.mouseX, state.mouseY, 2, 0, Math.PI * 2);
+            ctx.fill();
         }
 
         function drawShape(points, color, dashed = false, selected = false, isFreeform = false) {
