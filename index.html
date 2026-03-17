@@ -1643,7 +1643,12 @@
                 drawRulerMeasurement();
             }
 
-            // Draw custom cursor (small black dot)
+            // Draw cursor last so it's always on top
+            drawCustomCursor();
+        }
+
+        function drawCustomCursor() {
+            // Draw custom cursor (small black dot) - always on top
             ctx.fillStyle = '#000000';
             ctx.beginPath();
             ctx.arc(state.mouseX, state.mouseY, 2, 0, Math.PI * 2);
