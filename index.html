@@ -1167,7 +1167,8 @@
 
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const GRID_SIZE = 5;
+        const GRID_SIZE = 20;
+        const SNAP_SIZE = 5;
         const POINT_SIZE = 8;
 
 
@@ -1419,8 +1420,8 @@
             }
 
             if (state.snapEnabled) {
-                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
-                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+                x = Math.round(x / SNAP_SIZE) * SNAP_SIZE;
+                y = Math.round(y / SNAP_SIZE) * SNAP_SIZE;
             }
 
             // Check if clicking near first point to close polygon (freeform mode)
