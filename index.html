@@ -1691,6 +1691,29 @@
             if (state.showRuler) {
                 drawRulerMeasurement();
             }
+
+            // Draw cursor coordinates in top-right corner
+            ctx.font = 'bold 16px monospace';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            const coordText = `X: ${state.mouseX}  Y: ${state.mouseY}`;
+            
+            // Draw semi-transparent background for better readability
+            const textMetrics = ctx.measureText(coordText);
+            const padding = 8;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.fillRect(
+                canvas.width - textMetrics.width - padding * 2,
+                padding,
+                textMetrics.width + padding * 2,
+                24
+            );
+            
+            // Draw text
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 16px monospace';
+            ctx.fillText(coordText, canvas.width - padding, padding);
         }
 
         function drawShape(points, color, dashed = false, selected = false, isFreeform = false, shapeType = null) {
