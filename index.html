@@ -985,6 +985,7 @@
                 <div class="help-section">
                     <h3>Drawing</h3>
                     <p>Pick a shape type on the left (Triangle, Square, etc.). Click points on the canvas where you want them. Most shapes need at least 3 points - just keep clicking. When you're done, press F or double-click to finish.</p>
+                    <p>For circles: click and drag to draw. The center is where you start dragging, and the radius extends to where you stop. It's the quickest way to create a circle.</p>
                     <p>If you want to draw something with a weird number of sides, pick "Freeform" instead. Click however many points you need, then click the first point again to close the shape.</p>
                 </div>
 
@@ -1083,6 +1084,8 @@
             mouseX: 0,
             mouseY: 0,
             currentProjectName: 'Untitled Project',
+            isDraggingCircle: false,
+            circleDragStart: null,
         };
 
         // Project management
@@ -1388,6 +1391,8 @@
             });
 
             canvas.addEventListener('click', onCanvasClick);
+            canvas.addEventListener('mousedown', onCanvasMouseDown);
+            canvas.addEventListener('mouseup', onCanvasMouseUp);
             canvas.addEventListener('dblclick', finishShape);
             canvas.addEventListener('mousemove', onCanvasMouseMove);
 
@@ -1404,10 +1409,51 @@
             });
         }
 
+        function onCanvasMouseDown(e) {
+            // For circle drag mode
+            if (state.currentShape === 'circle') {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * canvas.width / rect.width;
+                const y = (e.clientY - rect.top) * canvas.height / rect.height;
+                
+                state.isDraggingCircle = true;
+                state.circleDragStart = [x, y];
+                state.points = [[x, y]];
+                redraw();
+            }
+        }
+
+        function onCanvasMouseUp(e) {
+            // For circle drag mode - finish the circle
+            if (state.currentShape === 'circle' && state.isDraggingCircle && state.circleDragStart) {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * canvas.width / rect.width;
+                const y = (e.clientY - rect.top) * canvas.height / rect.height;
+                
+                const [startX, startY] = state.circleDragStart;
+                const radius = Math.hypot(x - startX, y - startY);
+                
+                // Only create circle if radius > 5 pixels
+                if (radius > 5) {
+                    state.points = [[startX, startY], [x, y]];
+                    finishShape();
+                }
+                
+                state.isDraggingCircle = false;
+                state.circleDragStart = null;
+                redraw();
+            }
+        }
+
         function onCanvasClick(e) {
             const rect = canvas.getBoundingClientRect();
             let x = (e.clientX - rect.left) * canvas.width / rect.width;
             let y = (e.clientY - rect.top) * canvas.height / rect.height;
+
+            // Circle mode - skip click, use drag instead
+            if (state.currentShape === 'circle') {
+                return;
+            }
 
             // Ruler mode - measure distance between points
             if (state.showRuler) {
@@ -1463,8 +1509,6 @@
                 finishShape();
             } else if (state.currentShape === 'trapezoid' && state.points.length === 4) {
                 finishShape();
-            } else if (state.currentShape === 'circle' && state.points.length === 2) {
-                finishShape();
             } else if (state.currentShape === 'triangle' && state.points.length === 3) {
                 finishShape();
             }
@@ -1498,6 +1542,11 @@
 
             // Redraw to show preview line when drawing
             if (state.showPreview && state.points.length > 0 && state.currentShape !== 'select' && state.currentShape !== 'circle') {
+                redraw();
+            }
+
+            // Show circle preview while dragging
+            if (state.isDraggingCircle && state.circleDragStart) {
                 redraw();
             }
 
