@@ -793,16 +793,6 @@
                 </div>
 
                 <div class="panel">
-                    <h2>TOOLS</h2>
-                    <div class="button-group">
-                        <button id="rotate-btn">Rotate</button>
-                        <button id="scale-btn">Scale</button>
-                        <button id="mirror-h-btn">Mirror H</button>
-                        <button id="mirror-v-btn">Mirror V</button>
-                    </div>
-                </div>
-
-                <div class="panel">
                     <h2>SHAPE TOOLS</h2>
                     <div class="button-group">
                         <button id="preview-btn" style="background: #2196F3; color: white;" title="Show next side preview while drawing">🔍 Preview</button>
@@ -821,7 +811,37 @@
                 </div>
 
                 <div class="panel">
-                    <h2>DISPLAY</h2>
+                    <h2>OPTIONS</h2>
+                    <label class="checkbox">
+                        <input type="checkbox" id="grid-toggle" checked>
+                        <span>Show Grid</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="snap-toggle" checked>
+                        <span>Snap to Grid</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="line-preview-toggle" checked>
+                        <span>Preview Lines</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="angle-preview-toggle" checked>
+                        <span>Show Angles</span>
+                    </label>
+                </div>
+
+                <div class="panel">
+                    <h2>ADVANCED TOOLS</h2>
+                    <div class="button-group">
+                        <button id="rotate-btn" style="font-size: 11px;">Rotate</button>
+                        <button id="scale-btn" style="font-size: 11px;">Scale</button>
+                        <button id="mirror-h-btn" style="font-size: 11px;">Mirror H</button>
+                        <button id="mirror-v-btn" style="font-size: 11px;">Mirror V</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>ANALYSIS</h2>
                     <label class="checkbox">
                         <input type="checkbox" id="show-median" checked>
                         <span>Show Medians</span>
@@ -837,30 +857,6 @@
                     <label class="checkbox">
                         <input type="checkbox" id="show-circumcircle">
                         <span>Show Circumcircle</span>
-                    </label>
-                </div>
-
-                <div class="panel">
-                    <h2>OPTIONS</h2>
-                    <label class="checkbox">
-                        <input type="checkbox" id="grid-toggle" checked>
-                        <span>Show Grid</span>
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" id="snap-toggle" checked>
-                        <span>Snap to Grid</span>
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" id="ruler-toggle">
-                        <span>Show Ruler (20px marks)</span>
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" id="line-preview-toggle" checked>
-                        <span>Preview Lines</span>
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" id="angle-preview-toggle" checked>
-                        <span>Show Angles</span>
                     </label>
                 </div>
             </aside>
@@ -1406,11 +1402,6 @@
             });
             document.getElementById('snap-toggle').addEventListener('change', e => { 
                 state.snapEnabled = e.target.checked; 
-            });
-            
-            document.getElementById('ruler-toggle').addEventListener('change', e => { 
-                state.showRulerMarks = e.target.checked;
-                redraw();
             });
 
             document.getElementById('line-preview-toggle').addEventListener('change', e => {
