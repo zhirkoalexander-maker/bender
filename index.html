@@ -1857,12 +1857,19 @@
                 const p = points[i];
                 const p2 = points[(i + 1) % points.length];
                 
-                const v1 = [(p1[0] - p[0]) / Math.hypot(p1[0] - p[0], p1[1] - p[1]), 
-                           (p1[1] - p[1]) / Math.hypot(p1[0] - p[0], p1[1] - p[1])];
-                const v2 = [(p2[0] - p[0]) / Math.hypot(p2[0] - p[0], p2[1] - p[1]), 
-                           (p2[1] - p[1]) / Math.hypot(p2[0] - p[0], p2[1] - p[1])];
+                const dist1 = Math.hypot(p1[0] - p[0], p1[1] - p[1]);
+                const dist2 = Math.hypot(p2[0] - p[0], p2[1] - p[1]);
+                
+                // Protection against degenerate geometry (zero-length edges)
+                if (dist1 === 0 || dist2 === 0) continue;
+                
+                const v1 = [(p1[0] - p[0]) / dist1, (p1[1] - p[1]) / dist1];
+                const v2 = [(p2[0] - p[0]) / dist2, (p2[1] - p[1]) / dist2];
                 const bisec = [(v1[0] + v2[0]) / 2, (v1[1] + v2[1]) / 2];
                 const len = Math.hypot(bisec[0], bisec[1]);
+                
+                // Protection against zero-length bisector
+                if (len === 0) continue;
                 
                 ctx.beginPath();
                 ctx.moveTo(p[0], p[1]);
@@ -2175,7 +2182,6 @@
             ctx.font = 'bold 13px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(angle.toFixed(1) + '°', textX, textY);
             ctx.fillText(angle.toFixed(1) + '°', textX, textY);
         }
 
