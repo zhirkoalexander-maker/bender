@@ -999,28 +999,28 @@
 
                 <div class="help-section">
                     <h3>The Numbers</h3>
-                    <p>When you draw something, the tool figures out everything automatically. For any shape, you get side lengths, angles, perimeter, and area. For triangles, it also shows you the heights and medians. It identifies what type of triangle it is (equilateral, isosceles, right angle, etc).</p>
-                    <p>Click Select mode and then click on a shape to pick it. The full analysis shows up in the right panel.</p>
+                    <p>Draw any shape and you get all the numbers instantly - side lengths, angles, perimeter, area. For triangles you also get heights, medians, and what type it is (equilateral, isosceles, right angle, etc).</p>
+                    <p>Click the Select tool and click a shape to see everything about it in the right panel.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Building Instead of Drawing</h3>
-                    <p>Don't feel like drawing? Use the BUILDER panel below. Pick a shape type, enter the dimensions in pixels, and it builds a perfect shape. Works for all the common stuff - equilateral triangles, isosceles triangles, right triangles, squares, rectangles, pentagons, hexagons.</p>
+                    <h3>Quick Shapes</h3>
+                    <p>Don't want to draw? Go to BUILDER and just enter numbers. Perfect square, perfect triangle, whatever - it builds it centered on the canvas. Works for equilateral triangles, isosceles, right triangles, squares, rectangles, pentagons, hexagons.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Visual Aids</h3>
-                    <p>If you want to see what medians or altitudes actually look like visually, flip those checkboxes in the DISPLAY panel. Medians are lines from corners to the midpoint of the opposite side. Altitudes are perpendicular lines from corners. Angle bisectors split angles in half. Circumcircle is the circle that touches all three corners of a triangle. Toggle them on and off to see what they look like.</p>
+                    <h3>Lines and Helpers</h3>
+                    <p>DISPLAY has checkboxes for medians (lines from corners to opposite midpoints), altitudes (perpendicular lines), angle bisectors (split angles), and circumcircle (circle through all corners). They're just to help you visualize - toggle them on/off to see what actually happens.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Moving and Changing Shapes</h3>
-                    <p>Select a shape, then use the transform buttons - Rotate (enter degrees), Scale (enter how many times bigger or smaller), or Mirror to flip it. All the calculations update automatically.</p>
+                    <h3>Transform Shapes</h3>
+                    <p>Picked a shape? Use the buttons below the canvas - Rotate (type degrees), Scale (multiply size), Mirror (flip it). Numbers update as you go.</p>
                 </div>
 
                 <div class="help-section">
-                    <h3>Saving</h3>
-                    <p>Click the Projects button to save your work. Everything saves to your browser locally - no account, no uploading. Come back later and load your project. You can rename or delete projects too.</p>
+                    <h3>Projects</h3>
+                    <p>Click Projects to save. Everything stays in your browser - nothing goes anywhere. Load it back later, rename it, delete it, whatever.</p>
                 </div>
 
                 <div class="help-section">
@@ -2839,6 +2839,16 @@
         }
 
         function buildRegularPolygon(sides, sideLength) {
+            // Protection from invalid input
+            if (sides < 3) {
+                alert('Polygon must have at least 3 sides');
+                return [];
+            }
+            if (sideLength <= 0) {
+                alert('Side length must be positive');
+                return [];
+            }
+            
             const radius = sideLength / (2 * Math.sin(Math.PI / sides));
             const cx = 400, cy = 300;
             const points = [];
@@ -2866,8 +2876,9 @@
             const p2 = [cx + a / 2, cy];
             
             // Вычисляем третью точку используя формулу
-            const cosA = (a * a + c * c - b * b) / (2 * a * c);
-            const sinA = Math.sqrt(1 - cosA * cosA);
+            // Защита от NaN из-за ошибок округления
+            const cosA = Math.max(-1, Math.min(1, (a * a + c * c - b * b) / (2 * a * c)));
+            const sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
             const p3 = [p1[0] + c * cosA, p1[1] - c * sinA];
             
             return [p1, p2, p3];
