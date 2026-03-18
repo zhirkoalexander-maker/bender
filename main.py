@@ -779,7 +779,13 @@ class GeometryStudio:
             ax, ay = a
             bx, by = b
             dx, dy = bx - ax, by - ay
-            t = max(0, min(1, ((px - ax) * dx + (py - ay) * dy) / (dx*dx + dy*dy)))
+            
+            # Protection against degenerate geometry (identical points)
+            denom = dx*dx + dy*dy
+            if denom == 0:
+                return
+            
+            t = max(0, min(1, ((px - ax) * dx + (py - ay) * dy) / denom))
             foot_x = ax + t * dx
             foot_y = ay + t * dy
             
