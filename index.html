@@ -2102,11 +2102,11 @@
             const mouseX = state.mouseX;
             const mouseY = state.mouseY;
 
-            // Draw preview line from last point to mouse (for all shapes including circle)
+            // Draw THICK, BRIGHT preview line from last point to mouse (for all shapes including circle)
             ctx.strokeStyle = state.currentColor;
-            ctx.lineWidth = 2;
-            ctx.setLineDash([3, 3]);
-            ctx.globalAlpha = 0.6;
+            ctx.lineWidth = 4;  // Thicker line
+            ctx.setLineDash([5, 5]);
+            ctx.globalAlpha = 1;  // Full opacity
             ctx.beginPath();
             ctx.moveTo(lastPoint[0], lastPoint[1]);
             ctx.lineTo(mouseX, mouseY);
@@ -2114,26 +2114,28 @@
             ctx.globalAlpha = 1;
             ctx.setLineDash([]);
 
-            // Draw distance label
+            // Draw BRIGHT distance label
             const distance = Math.hypot(mouseX - lastPoint[0], mouseY - lastPoint[1]);
             const midX = (lastPoint[0] + mouseX) / 2;
             const midY = (lastPoint[1] + mouseY) / 2;
 
-            ctx.fillStyle = 'rgba(255,255,255,0.95)';
-            ctx.fillRect(midX - 28, midY - 12, 56, 24);
+            // Bright white background
+            ctx.fillStyle = 'rgba(255,255,255,1)';
+            ctx.fillRect(midX - 35, midY - 15, 70, 30);
             ctx.strokeStyle = state.currentColor;
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(midX - 28, midY - 12, 56, 24);
+            ctx.lineWidth = 2;
+            ctx.strokeRect(midX - 35, midY - 15, 70, 30);
 
-            ctx.fillStyle = state.currentColor;
-            ctx.font = 'bold 12px Arial';
+            // Bold black text
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(distance.toFixed(0) + 'px', midX, midY);
         }
 
         function drawAnglePreview(points) {
-            if (!state.showAnglePreview || points.length < 2) return;
+            if (!state.showAnglePreview || points.length < 3) return;  // Need at least 3 points!
 
             const lastPoint = points[points.length - 1];
             const prevPoint = points[points.length - 2];
@@ -2153,26 +2155,34 @@
             const cosAngle = dotProduct / (mag1 * mag2);
             const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle))) * (180 / Math.PI);
 
-            // Draw angle arc
-            const arcRadius = 30;
+            // Draw BRIGHT orange angle arc
+            const arcRadius = 40;
             const startAngle = Math.atan2(vec1[1], vec1[0]);
             const endAngle = Math.atan2(vec2[1], vec2[0]);
 
-            ctx.strokeStyle = '#FF9800';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#FF6B00';
+            ctx.lineWidth = 3;  // Thicker arc
             ctx.beginPath();
             ctx.arc(lastPoint[0], lastPoint[1], arcRadius, startAngle, endAngle, endAngle < startAngle);
             ctx.stroke();
 
-            // Draw angle text
+            // Draw angle text in BRIGHT orange circle
             const midAngle = (startAngle + endAngle) / 2;
-            const textX = lastPoint[0] + Math.cos(midAngle) * (arcRadius + 15);
-            const textY = lastPoint[1] + Math.sin(midAngle) * (arcRadius + 15);
+            const textX = lastPoint[0] + Math.cos(midAngle) * (arcRadius + 20);
+            const textY = lastPoint[1] + Math.sin(midAngle) * (arcRadius + 20);
 
-            ctx.fillStyle = '#FF9800';
-            ctx.font = 'bold 12px Arial';
+            // Bright orange circle background
+            ctx.fillStyle = '#FF6B00';
+            ctx.beginPath();
+            ctx.arc(textX, textY, 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            // White angle text
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 13px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+            ctx.fillText(angle.toFixed(1) + '°', textX, textY);
             ctx.fillText(angle.toFixed(1) + '°', textX, textY);
         }
 
