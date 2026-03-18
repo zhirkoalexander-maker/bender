@@ -1563,7 +1563,7 @@
 
             state.shapes.forEach((shape, idx) => {
                 const isSelected = idx === state.selectedShapeIdx;
-                drawShape(shape.points, shape.color, false, isSelected, false);
+                drawShape(shape.points, shape.color, false, isSelected, false, shape.type);
                 
                 if (isSelected && shape.points.length >= 3) {
                     if (state.showMedian) drawMedians(shape.points);
@@ -1644,8 +1644,23 @@
             }
         }
 
-        function drawShape(points, color, dashed = false, selected = false, isFreeform = false) {
+        function drawShape(points, color, dashed = false, selected = false, isFreeform = false, shapeType = null) {
             if (points.length < 2) return;
+
+            // Handle circles specially
+            if (shapeType === 'circle' && points.length === 2) {
+                const [cx, cy] = points[0];
+                const [px, py] = points[1];
+                const radius = Math.hypot(px - cx, py - cy);
+                ctx.strokeStyle = selected ? '#333' : color;
+                ctx.lineWidth = selected ? 5 : 3;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = selected ? color + '60' : color + '30';
+                ctx.fill();
+                return;
+            }
 
             ctx.strokeStyle = selected ? '#333' : color;
             ctx.lineWidth = selected ? 5 : 3;
@@ -2569,7 +2584,7 @@
 
         function buildEquilateralTriangle(side) {
             const height = (side * Math.sqrt(3)) / 2;
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             return [
                 [cx, cy - height / 2],
                 [cx - side / 2, cy + height / 2],
@@ -2579,7 +2594,7 @@
 
         function buildIsoscelesTriangle(base, side) {
             const height = Math.sqrt(side * side - (base / 2) * (base / 2));
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             return [
                 [cx, cy - height / 2],
                 [cx - base / 2, cy + height / 2],
@@ -2588,7 +2603,7 @@
         }
 
         function buildRightTriangle(a, b) {
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             return [
                 [cx - a / 2, cy - b / 2],
                 [cx + a / 2, cy - b / 2],
@@ -2597,7 +2612,7 @@
         }
 
         function buildSquare(side) {
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             const half = side / 2;
             return [
                 [cx - half, cy - half],
@@ -2608,7 +2623,7 @@
         }
 
         function buildRectangle(width, height) {
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             const hw = width / 2, hh = height / 2;
             return [
                 [cx - hw, cy - hh],
@@ -2619,7 +2634,7 @@
         }
 
         function buildTrapezoid(topBase, bottomBase, height) {
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             const topHalf = topBase / 2;
             const bottomHalf = bottomBase / 2;
             const hh = height / 2;
@@ -2633,7 +2648,7 @@
 
         function buildRegularPolygon(sides, sideLength) {
             const radius = sideLength / (2 * Math.sin(Math.PI / sides));
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             const points = [];
             
             for (let i = 0; i < sides; i++) {
@@ -2654,7 +2669,7 @@
             }
             
             // Строим треугольник с использованием закона косинусов
-            const cx = 400, cy = 250;
+            const cx = 400, cy = 300;
             const p1 = [cx - a / 2, cy];
             const p2 = [cx + a / 2, cy];
             
