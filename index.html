@@ -841,6 +841,14 @@
                         <input type="checkbox" id="ruler-toggle">
                         <span>Show Ruler (20px marks)</span>
                     </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="line-preview-toggle" checked>
+                        <span>Preview Lines</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" id="angle-preview-toggle" checked>
+                        <span>Show Angles</span>
+                    </label>
                 </div>
             </aside>
 
@@ -1080,6 +1088,8 @@
             showAngles: false,
             showRuler: false,
             showRulerMarks: false,
+            showLinePreview: true,
+            showAnglePreview: true,
             rulerPoints: [],
             mouseX: 0,
             mouseY: 0,
@@ -1390,6 +1400,16 @@
                 redraw();
             });
 
+            document.getElementById('line-preview-toggle').addEventListener('change', e => {
+                state.showLinePreview = e.target.checked;
+                redraw();
+            });
+
+            document.getElementById('angle-preview-toggle').addEventListener('change', e => {
+                state.showAnglePreview = e.target.checked;
+                redraw();
+            });
+
             canvas.addEventListener('click', onCanvasClick);
             canvas.addEventListener('mousedown', onCanvasMouseDown);
             canvas.addEventListener('mouseup', onCanvasMouseUp);
@@ -1625,9 +1645,17 @@
             if (state.points.length > 0) {
                 if (state.currentShape === 'circle' && state.points.length >= 1) {
                     const [cx, cy] = state.points[0];
+                    let radius = 0;
+                    
                     if (state.points.length >= 2) {
                         const [px, py] = state.points[1];
-                        const radius = Math.hypot(px - cx, py - cy);
+                        radius = Math.hypot(px - cx, py - cy);
+                    } else if (state.isDraggingCircle) {
+                        // Show preview while dragging
+                        radius = Math.hypot(state.mouseX - cx, state.mouseY - cy);
+                    }
+
+                    if (radius > 0) {
                         ctx.strokeStyle = state.currentColor;
                         ctx.lineWidth = 3;
                         ctx.beginPath();
@@ -1663,6 +1691,16 @@
                 // Draw preview of next line/side
                 if (state.points.length > 0 && state.currentShape !== 'circle') {
                     drawPreviewLine(state.points);
+                }
+
+                // Draw preview line for all shapes (including circle)
+                if (state.points.length > 0) {
+                    drawPreviewLineForAll(state.points);
+                }
+
+                // Draw angle preview when has 2+ points
+                if (state.points.length >= 2) {
+                    drawAnglePreview(state.points);
                 }
             }
 
@@ -2043,6 +2081,88 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(distance.toFixed(0) + 'px', midX, midY);
+        }
+
+        function drawPreviewLineForAll(points) {
+            if (!state.showLinePreview || state.showRuler) return;
+            if (points.length === 0) return;
+
+            const lastPoint = points[points.length - 1];
+            const mouseX = state.mouseX;
+            const mouseY = state.mouseY;
+
+            // Draw preview line from last point to mouse (for all shapes including circle)
+            ctx.strokeStyle = state.currentColor;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.globalAlpha = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(lastPoint[0], lastPoint[1]);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.setLineDash([]);
+
+            // Draw distance label
+            const distance = Math.hypot(mouseX - lastPoint[0], mouseY - lastPoint[1]);
+            const midX = (lastPoint[0] + mouseX) / 2;
+            const midY = (lastPoint[1] + mouseY) / 2;
+
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            ctx.fillRect(midX - 28, midY - 12, 56, 24);
+            ctx.strokeStyle = state.currentColor;
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(midX - 28, midY - 12, 56, 24);
+
+            ctx.fillStyle = state.currentColor;
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(distance.toFixed(0) + 'px', midX, midY);
+        }
+
+        function drawAnglePreview(points) {
+            if (!state.showAnglePreview || points.length < 2) return;
+
+            const lastPoint = points[points.length - 1];
+            const prevPoint = points[points.length - 2];
+            const mouseX = state.mouseX;
+            const mouseY = state.mouseY;
+
+            // Calculate angle between previous line and current line
+            const vec1 = [lastPoint[0] - prevPoint[0], lastPoint[1] - prevPoint[1]];
+            const vec2 = [mouseX - lastPoint[0], mouseY - lastPoint[1]];
+
+            const dotProduct = vec1[0] * vec2[0] + vec1[1] * vec2[1];
+            const mag1 = Math.hypot(vec1[0], vec1[1]);
+            const mag2 = Math.hypot(vec2[0], vec2[1]);
+
+            if (mag1 === 0 || mag2 === 0) return;
+
+            const cosAngle = dotProduct / (mag1 * mag2);
+            const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle))) * (180 / Math.PI);
+
+            // Draw angle arc
+            const arcRadius = 30;
+            const startAngle = Math.atan2(vec1[1], vec1[0]);
+            const endAngle = Math.atan2(vec2[1], vec2[0]);
+
+            ctx.strokeStyle = '#FF9800';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(lastPoint[0], lastPoint[1], arcRadius, startAngle, endAngle, endAngle < startAngle);
+            ctx.stroke();
+
+            // Draw angle text
+            const midAngle = (startAngle + endAngle) / 2;
+            const textX = lastPoint[0] + Math.cos(midAngle) * (arcRadius + 15);
+            const textY = lastPoint[1] + Math.sin(midAngle) * (arcRadius + 15);
+
+            ctx.fillStyle = '#FF9800';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(angle.toFixed(1) + '°', textX, textY);
         }
 
         function drawRulerMeasurement() {
