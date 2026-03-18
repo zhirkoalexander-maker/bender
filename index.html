@@ -2279,6 +2279,9 @@
         }
 
         function analyzeSelectedShape(idx) {
+            if (idx === null || idx === undefined || idx < 0 || idx >= state.shapes.length) {
+                return;
+            }
             const shape = state.shapes[idx];
             let analysis = null;
             
